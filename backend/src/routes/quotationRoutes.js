@@ -5,6 +5,7 @@ const {
   getQuotationById,
   updateQuotationStatus,
 } = require('../controllers/quotationController');
+const { convertQuotationToSalesOrder } = require('../controllers/salesOrderController');
 const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
@@ -15,5 +16,6 @@ router.post('/', createQuotation);
 router.get('/', getQuotations);
 router.get('/:id', getQuotationById);
 router.patch('/:id/status', updateQuotationStatus);
+router.post('/:id/convert', convertQuotationToSalesOrder);
 
 module.exports = router;
