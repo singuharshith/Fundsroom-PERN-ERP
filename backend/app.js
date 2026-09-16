@@ -2,6 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./src/routes/authRoutes');
+const enquiryRoutes = require('./src/routes/enquiryRoutes');
+const productRoutes = require('./src/routes/productRoutes');
+const inventoryRoutes = require('./src/routes/inventoryRoutes');
+const customerRoutes = require('./src/routes/customerRoutes');
 const errorHandler = require('./src/middleware/errorHandler');
 
 dotenv.config();
@@ -13,6 +17,10 @@ app.use(express.json());
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/enquiries', enquiryRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/customers', customerRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
