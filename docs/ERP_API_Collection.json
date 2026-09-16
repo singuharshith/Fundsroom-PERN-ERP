@@ -1,0 +1,295 @@
+{
+	"info": {
+		"_postman_id": "erp-case-study-collection-id",
+		"name": "PERN ERP System API Collection",
+		"description": "Postman API documentation for PERN ERP Case Study application.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/api",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@fundsroom.com\",\n  \"password\": \"Admin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login (Sales User)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"sales@fundsroom.com\",\n  \"password\": \"Sales@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Current User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "me"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Customers",
+			"item": [
+				{
+					"name": "Get Customers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/customers",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers"]
+						}
+					}
+				},
+				{
+					"name": "Create Customer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"company_name\": \"Nexus Engineering Pvt Ltd\",\n  \"contact_person\": \"Vikram Mehta\",\n  \"mobile\": \"+91 9988776655\",\n  \"email\": \"vikram@nexuseng.com\",\n  \"city\": \"Bengaluru\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Products & Inventory",
+			"item": [
+				{
+					"name": "Get Products List",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["products"]
+						}
+					}
+				},
+				{
+					"name": "Get Inventory Stock",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/inventory",
+							"host": ["{{baseUrl}}"],
+							"path": ["inventory"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Enquiries",
+			"item": [
+				{
+					"name": "Create Enquiry",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customer_id\": 1,\n  \"required_date\": \"2026-11-30\",\n  \"notes\": \"Urgent industrial bearings requirement\",\n  \"items\": [\n    { \"product_id\": 1, \"quantity\": 25 },\n    { \"product_id\": 3, \"quantity\": 10 }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/enquiries",
+							"host": ["{{baseUrl}}"],
+							"path": ["enquiries"]
+						}
+					}
+				},
+				{
+					"name": "Get All Enquiries",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/enquiries",
+							"host": ["{{baseUrl}}"],
+							"path": ["enquiries"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Quotations",
+			"item": [
+				{
+					"name": "Create Quotation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enquiry_id\": 1,\n  \"valid_until\": \"2026-12-15\",\n  \"items\": [\n    {\n      \"product_id\": 1,\n      \"quantity\": 25,\n      \"unit_price\": 350.00,\n      \"discount_percent\": 5,\n      \"gst_percent\": 18\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/quotations",
+							"host": ["{{baseUrl}}"],
+							"path": ["quotations"]
+						}
+					}
+				},
+				{
+					"name": "Update Quotation Status (Accept/Reject)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"ACCEPTED\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/quotations/1/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["quotations", "1", "status"]
+						}
+					}
+				},
+				{
+					"name": "Convert Quotation to Sales Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/quotations/1/convert",
+							"host": ["{{baseUrl}}"],
+							"path": ["quotations", "1", "convert"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Sales Orders & Dispatch",
+			"item": [
+				{
+					"name": "Get All Sales Orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/sales-orders",
+							"host": ["{{baseUrl}}"],
+							"path": ["sales-orders"]
+						}
+					}
+				},
+				{
+					"name": "Confirm Sales Order (ADMIN Only - Reserve Stock)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/sales-orders/1/confirm",
+							"host": ["{{baseUrl}}"],
+							"path": ["sales-orders", "1", "confirm"]
+						}
+					}
+				},
+				{
+					"name": "Dispatch Sales Order (ADMIN Only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"vehicle_number\": \"MH-12-PQ-9988\",\n  \"driver_name\": \"Ramesh Sharma\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/sales-orders/1/dispatch",
+							"host": ["{{baseUrl}}"],
+							"path": ["sales-orders", "1", "dispatch"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
