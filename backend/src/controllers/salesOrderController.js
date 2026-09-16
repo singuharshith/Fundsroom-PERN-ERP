@@ -1,3 +1,4 @@
+const { z } = require('zod');
 const prisma = require('../config/prisma');
 
 const convertQuotationToSalesOrder = async (req, res, next) => {
@@ -105,10 +106,8 @@ const confirmSalesOrder = async (req, res, next) => {
       });
     }
 
-    // Atomic transaction for check & reserve
     try {
       const updatedOrder = await prisma.$transaction(async (tx) => {
-        // Step 1: Check availability for ALL line items first (All-or-Nothing)
         for (const item of salesOrder.items) {
           const inventory = await tx.inventory.findUnique({
             where: { product_id: item.product_id },
@@ -129,9 +128,7 @@ const confirmSalesOrder = async (req, res, next) => {
           }
         }
 
-        // Step 2: Atomic update to reserve stock for all items
         for (const item of salesOrder.items) {
-          // Atomic conditional update check at database level
           const updateResult = await tx.$executeRaw`
             UPDATE inventory 
             SET reserved_quantity = reserved_quantity + ${item.quantity}
@@ -148,7 +145,6 @@ const confirmSalesOrder = async (req, res, next) => {
           }
         }
 
-        // Step 3: Update Sales Order status to CONFIRMED
         const confirmed = await tx.salesOrder.update({
           where: { id },
           data: {
@@ -169,6 +165,122 @@ const confirmSalesOrder = async (req, res, next) => {
       res.json({
         message: 'Sales Order confirmed and inventory reserved successfully.',
         sales_order: updatedOrder,
+      });
+    } catch (txError) {
+      if (txError.statusCode === 400) {
+        return res.status(400).json({ error: txError.message });
+      }
+      throw txError;
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+const dispatchSchema = z.object({
+  vehicle_number: z.string().min(1, 'Vehicle number is required'),
+  driver_name: z.string().min(1, 'Driver name is required'),
+});
+
+const dispatchSalesOrder = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid Sales Order ID.' });
+    }
+
+    const parseResult = dispatchSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ error: parseResult.error.errors[0].message });
+    }
+
+    const { vehicle_number, driver_name } = parseResult.data;
+
+    const salesOrder = await prisma.salesOrder.findUnique({
+      where: { id },
+      include: {
+        items: true,
+      },
+    });
+
+    if (!salesOrder) {
+      return res.status(404).json({ error: 'Sales Order not found.' });
+    }
+
+    if (salesOrder.status !== 'CONFIRMED') {
+      return res.status(400).json({
+        error: `Cannot dispatch order with status '${salesOrder.status}'. Order must be CONFIRMED.`,
+      });
+    }
+
+    const count = await prisma.dispatch.count();
+    const dispatch_number = `DISP-${String(count + 1).padStart(4, '0')}`;
+
+    try {
+      const result = await prisma.$transaction(async (tx) => {
+        // Step 1: Create Dispatch record
+        const dispatch = await tx.dispatch.create({
+          data: {
+            dispatch_number,
+            sales_order_id: salesOrder.id,
+            vehicle_number,
+            driver_name,
+            dispatched_by: req.user.id,
+            items: {
+              create: salesOrder.items.map(item => ({
+                product_id: item.product_id,
+                quantity: item.quantity,
+              })),
+            },
+          },
+          include: {
+            items: { include: { product: true } },
+            user: { select: { id: true, name: true, email: true } },
+          },
+        });
+
+        // Step 2: Decrement BOTH physical_quantity AND reserved_quantity for each product
+        for (const item of salesOrder.items) {
+          const inv = await tx.inventory.findUnique({
+            where: { product_id: item.product_id },
+          });
+
+          if (!inv || inv.reserved_quantity < item.quantity || inv.physical_quantity < item.quantity) {
+            const err = new Error(
+              `Cannot dispatch product ID ${item.product_id}: requested quantity exceeds reserved stock.`
+            );
+            err.statusCode = 400;
+            throw err;
+          }
+
+          await tx.inventory.update({
+            where: { product_id: item.product_id },
+            data: {
+              physical_quantity: { decrement: item.quantity },
+              reserved_quantity: { decrement: item.quantity },
+            },
+          });
+        }
+
+        // Step 3: Update Sales Order status to DISPATCHED
+        const updatedOrder = await tx.salesOrder.update({
+          where: { id },
+          data: { status: 'DISPATCHED' },
+          include: {
+            customer: true,
+            creator: { select: { id: true, name: true, email: true } },
+            confirmer: { select: { id: true, name: true, email: true } },
+            items: { include: { product: { include: { inventory: true } } } },
+          },
+        });
+
+        return { dispatch, sales_order: updatedOrder };
+      });
+
+      res.json({
+        message: 'Sales Order dispatched successfully. Physical & reserved inventory updated.',
+        dispatch: result.dispatch,
+        sales_order: result.sales_order,
       });
     } catch (txError) {
       if (txError.statusCode === 400) {
@@ -290,6 +402,7 @@ const getSalesOrderById = async (req, res, next) => {
 module.exports = {
   convertQuotationToSalesOrder,
   confirmSalesOrder,
+  dispatchSalesOrder,
   getSalesOrders,
   getSalesOrderById,
 };
