@@ -7,7 +7,6 @@ const convertQuotationToSalesOrder = async (req, res, next) => {
       return res.status(400).json({ error: 'Invalid quotation ID.' });
     }
 
-    // Fetch quotation with items
     const quotation = await prisma.quotation.findUnique({
       where: { id: quotationId },
       include: {
@@ -20,21 +19,18 @@ const convertQuotationToSalesOrder = async (req, res, next) => {
       return res.status(404).json({ error: 'Quotation not found.' });
     }
 
-    // Guard 1: Status must be ACCEPTED
     if (quotation.status !== 'ACCEPTED') {
       return res.status(400).json({
         error: `Cannot convert quotation with status '${quotation.status}'. Only ACCEPTED quotations can be converted into a Sales Order.`,
       });
     }
 
-    // Guard 2: Application level check for existing sales order
     if (quotation.sales_order) {
       return res.status(409).json({
         error: 'This quotation has already been converted into a Sales Order.',
       });
     }
 
-    // Generate unique Sales Order Number
     const count = await prisma.salesOrder.count();
     const order_number = `SO-${String(count + 1).padStart(4, '0')}`;
 
@@ -71,13 +67,114 @@ const convertQuotationToSalesOrder = async (req, res, next) => {
         sales_order: salesOrder,
       });
     } catch (dbError) {
-      // Prisma P2002 code indicates unique constraint violation (quotation_id)
       if (dbError.code === 'P2002') {
         return res.status(409).json({
           error: 'Conflict: A Sales Order has already been created for this quotation.',
         });
       }
       throw dbError;
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+const confirmSalesOrder = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid Sales Order ID.' });
+    }
+
+    const salesOrder = await prisma.salesOrder.findUnique({
+      where: { id },
+      include: {
+        items: {
+          include: { product: true },
+        },
+      },
+    });
+
+    if (!salesOrder) {
+      return res.status(404).json({ error: 'Sales Order not found.' });
+    }
+
+    if (salesOrder.status !== 'PENDING') {
+      return res.status(400).json({
+        error: `Cannot confirm order with status '${salesOrder.status}'. Order must be PENDING.`,
+      });
+    }
+
+    // Atomic transaction for check & reserve
+    try {
+      const updatedOrder = await prisma.$transaction(async (tx) => {
+        // Step 1: Check availability for ALL line items first (All-or-Nothing)
+        for (const item of salesOrder.items) {
+          const inventory = await tx.inventory.findUnique({
+            where: { product_id: item.product_id },
+            include: { product: true },
+          });
+
+          if (!inventory) {
+            throw new Error(`Inventory record missing for product ID ${item.product_id}.`);
+          }
+
+          const available = inventory.physical_quantity - inventory.reserved_quantity;
+          if (available < item.quantity) {
+            const err = new Error(
+              `Insufficient stock for '${inventory.product.product_name}'. Requested: ${item.quantity}, Available: ${available}. Reservation aborted.`
+            );
+            err.statusCode = 400;
+            throw err;
+          }
+        }
+
+        // Step 2: Atomic update to reserve stock for all items
+        for (const item of salesOrder.items) {
+          // Atomic conditional update check at database level
+          const updateResult = await tx.$executeRaw`
+            UPDATE inventory 
+            SET reserved_quantity = reserved_quantity + ${item.quantity}
+            WHERE product_id = ${item.product_id} 
+              AND (physical_quantity - reserved_quantity) >= ${item.quantity}
+          `;
+
+          if (updateResult === 0) {
+            const err = new Error(
+              `Stock reservation failed concurrently for product ID ${item.product_id}.`
+            );
+            err.statusCode = 400;
+            throw err;
+          }
+        }
+
+        // Step 3: Update Sales Order status to CONFIRMED
+        const confirmed = await tx.salesOrder.update({
+          where: { id },
+          data: {
+            status: 'CONFIRMED',
+            confirmed_by: req.user.id,
+          },
+          include: {
+            customer: true,
+            creator: { select: { id: true, name: true, email: true } },
+            confirmer: { select: { id: true, name: true, email: true } },
+            items: { include: { product: { include: { inventory: true } } } },
+          },
+        });
+
+        return confirmed;
+      });
+
+      res.json({
+        message: 'Sales Order confirmed and inventory reserved successfully.',
+        sales_order: updatedOrder,
+      });
+    } catch (txError) {
+      if (txError.statusCode === 400) {
+        return res.status(400).json({ error: txError.message });
+      }
+      throw txError;
     }
   } catch (error) {
     next(error);
@@ -106,7 +203,6 @@ const getSalesOrders = async (req, res, next) => {
       },
     });
 
-    // Attach computed available_quantity to each item's product inventory
     const formattedOrders = salesOrders.map(order => ({
       ...order,
       items: order.items.map(item => {
@@ -193,6 +289,7 @@ const getSalesOrderById = async (req, res, next) => {
 
 module.exports = {
   convertQuotationToSalesOrder,
+  confirmSalesOrder,
   getSalesOrders,
   getSalesOrderById,
 };
