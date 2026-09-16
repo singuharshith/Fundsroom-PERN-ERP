@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./src/routes/authRoutes');
 const enquiryRoutes = require('./src/routes/enquiryRoutes');
+const quotationRoutes = require('./src/routes/quotationRoutes');
 const productRoutes = require('./src/routes/productRoutes');
 const inventoryRoutes = require('./src/routes/inventoryRoutes');
 const customerRoutes = require('./src/routes/customerRoutes');
@@ -18,6 +19,7 @@ app.use(express.json());
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/enquiries', enquiryRoutes);
+app.use('/api/quotations', quotationRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/customers', customerRoutes);
