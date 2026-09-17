@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { LogOut, Package, FileText, ShoppingBag, ClipboardList, User, ShieldCheck } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout, isAdmin } = useAuth();
@@ -12,56 +13,74 @@ export default function Navbar() {
   };
 
   const navLinkClass = ({ isActive }) =>
-    `px-3 py-3 text-xs font-medium border-b-2 transition-colors ${
+    `flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
       isActive
-        ? 'border-[#D99A3D] text-[#E9E6DF] font-semibold'
-        : 'border-transparent text-[#8F9799] hover:text-[#E9E6DF]'
+        ? 'bg-blue-600 text-white shadow-sm'
+        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
     }`;
 
   return (
-    <header class="bg-[#23282C] border-b border-[#3A4145] text-[#E9E6DF]">
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-14">
-          {/* Logo & Environment */}
+        <div class="flex items-center justify-between h-16">
+          {/* Brand Logo */}
           <div class="flex items-center gap-3">
-            <span class="font-bold text-sm text-[#E9E6DF] font-mono tracking-tight">
-              FundsRoom ERP
-            </span>
-            <span class="text-[11px] font-mono text-[#8F9799] px-1.5 py-0.5 border border-[#3A4145] bg-[#1B1F22]">
-              Production
-            </span>
+            <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+              <Package class="w-5 h-5" />
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-extrabold text-base text-slate-900 tracking-tight">FundsRoom ERP</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded border border-blue-200">v1.0</span>
+              </div>
+              <span class="block text-[11px] text-slate-500 font-medium">Industrial Supply Chain & Inventory Suite</span>
+            </div>
           </div>
 
-          {/* Nav Links */}
-          <nav class="flex items-center space-x-1">
+          {/* Navigation Links */}
+          <nav class="hidden md:flex items-center space-x-1.5 bg-slate-100/80 p-1 rounded-xl border border-slate-200">
             <NavLink to="/enquiries" class={navLinkClass}>
-              Enquiries
+              <ClipboardList class="w-4 h-4" />
+              1. Enquiries
             </NavLink>
             <NavLink to="/quotations" class={navLinkClass}>
-              Quotations
+              <FileText class="w-4 h-4" />
+              2. Quotations
             </NavLink>
             <NavLink to="/sales-orders" class={navLinkClass}>
-              Sales orders
+              <ShoppingBag class="w-4 h-4" />
+              3. Sales Orders
             </NavLink>
             <NavLink to="/inventory" class={navLinkClass}>
-              Inventory
+              <Package class="w-4 h-4" />
+              Inventory Stock
             </NavLink>
           </nav>
 
-          {/* User info & Sign out */}
-          <div class="flex items-center gap-3 text-xs font-mono">
-            <div class="text-[#8F9799]">
-              <span class="text-[#E9E6DF] font-medium">{user?.name}</span>
-              <span class="mx-1.5 text-[#3A4145]">|</span>
-              <span class={isAdmin ? 'text-[#D99A3D]' : 'text-[#5B84A8]'}>
-                {user?.role}
-              </span>
+          {/* User Profile & Actions */}
+          <div class="flex items-center gap-3">
+            <div class="hidden sm:flex items-center gap-2.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+              <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">
+                <User class="w-4 h-4" />
+              </div>
+              <div class="text-left">
+                <div class="text-xs font-bold text-slate-900 leading-tight">{user?.name}</div>
+                <div class="flex items-center gap-1 mt-0.5">
+                  <ShieldCheck class={`w-3 h-3 ${isAdmin ? 'text-amber-600' : 'text-blue-600'}`} />
+                  <span class={`text-[10px] font-bold uppercase ${isAdmin ? 'text-amber-700' : 'text-blue-700'}`}>
+                    {user?.role}
+                  </span>
+                </div>
+              </div>
             </div>
+
             <button
               onClick={handleLogout}
-              class="px-2.5 py-1 text-xs text-[#8F9799] hover:text-[#E9E6DF] border border-[#3A4145] hover:bg-[#2A3034] transition-colors"
+              class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 text-xs font-bold rounded-xl transition-all border border-slate-200 hover:border-rose-200"
+              title="Sign Out"
             >
-              Sign out
+              <LogOut class="w-3.5 h-3.5" />
+              <span class="hidden sm:inline">Logout</span>
             </button>
           </div>
         </div>

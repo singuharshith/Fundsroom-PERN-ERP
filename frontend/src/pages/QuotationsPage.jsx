@@ -169,18 +169,18 @@ export default function QuotationsPage() {
     }
   };
 
-  const getStatusBorderColor = (status) => {
+  const getStatusBadge = (status) => {
     switch (status) {
       case 'DRAFT':
-        return 'border-l-[#5B84A8] text-[#5B84A8]';
+        return 'bg-slate-100 text-slate-700 border border-slate-300';
       case 'SENT':
-        return 'border-l-[#D99A3D] text-[#D99A3D]';
+        return 'bg-amber-50 text-amber-700 border border-amber-300';
       case 'ACCEPTED':
-        return 'border-l-[#5A9E7A] text-[#5A9E7A]';
+        return 'bg-emerald-50 text-emerald-700 border border-emerald-300';
       case 'REJECTED':
-        return 'border-l-[#B8543F] text-[#B8543F]';
+        return 'bg-rose-50 text-rose-700 border border-rose-300';
       default:
-        return 'border-l-[#8F9799] text-[#8F9799]';
+        return 'bg-slate-100 text-slate-700 border border-slate-300';
     }
   };
 
@@ -189,91 +189,91 @@ export default function QuotationsPage() {
   const totalPipelineValue = quotations.reduce((acc, q) => acc + parseFloat(q.grand_total), 0);
 
   return (
-    <div class="space-y-5">
-      {/* Routing Strip Tracker */}
+    <div className="space-y-6">
+      {/* Step Tracker */}
       <WorkflowTracker currentStep={2} />
 
-      {/* Hairline Stat Strip (Rule 4) */}
-      <div class="bg-[#23282C] border border-[#3A4145] grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[#3A4145]">
-        <div class="p-4">
-          <div class="font-mono text-2xl font-semibold text-[#E9E6DF]">{totalQuotationsCount}</div>
-          <div class="text-xs text-[#8F9799] mt-0.5">Total quotations</div>
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Quotations</div>
+          <div className="font-mono text-2xl font-bold text-slate-900 mt-1">{totalQuotationsCount}</div>
         </div>
-        <div class="p-4">
-          <div class="font-mono text-2xl font-semibold text-[#5A9E7A]">{acceptedCount}</div>
-          <div class="text-xs text-[#8F9799] mt-0.5">Accepted deals</div>
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Accepted Deals</div>
+          <div className="font-mono text-2xl font-bold text-emerald-600 mt-1">{acceptedCount}</div>
         </div>
-        <div class="p-4">
-          <div class="font-mono text-2xl font-semibold text-[#D99A3D]">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Quoted Value</div>
+          <div className="font-mono text-2xl font-bold text-blue-600 mt-1">
             ₹{totalPipelineValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
-          <div class="text-xs text-[#8F9799] mt-0.5">Total quoted value</div>
         </div>
       </div>
 
       {/* Section Header & Action */}
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#3A4145] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
         <div>
-          <h1 class="text-lg font-semibold text-[#E9E6DF]">Quotations</h1>
-          <p class="text-xs text-[#8F9799] mt-0.5">
-            Formal price calculations with unit price, discount %, and GST %
+          <h1 className="text-xl font-bold text-slate-900">Quotations</h1>
+          <p className="text-xs text-slate-600 mt-1">
+            Formal price calculations with line-item discounts and GST calculation
           </p>
         </div>
         <button
           onClick={() => { resetForm(); setIsCreateOpen(true); }}
-          class="bg-[#D99A3D] hover:bg-[#c48933] text-[#1B1F22] font-semibold text-xs px-3.5 py-2 rounded-[4px] transition-colors self-start sm:self-auto"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs px-4 py-2.5 rounded-lg shadow-sm transition-colors self-start sm:self-auto flex items-center gap-2"
         >
-          Draft quotation
+          <span>+</span> Draft Quotation
         </button>
       </div>
 
-      {/* Table (Rule 8) */}
-      <div class="bg-[#23282C] border border-[#3A4145]">
+      {/* Table Card */}
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         {loading ? (
-          <div class="p-8 text-center text-xs font-mono text-[#8F9799]">Querying database records...</div>
+          <div className="p-8 text-center text-xs font-mono text-slate-500">Loading quotation ledger...</div>
         ) : quotations.length === 0 ? (
-          <div class="p-8 text-center text-xs text-[#8F9799]">No quotations logged for this filter.</div>
+          <div className="p-8 text-center text-xs text-slate-500">No quotations recorded yet. Click 'Draft Quotation' to create one.</div>
         ) : (
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-[#1B1F22] border-b border-[#3A4145] text-[#8F9799] font-mono text-[11px] uppercase">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold text-[11px] uppercase tracking-wider">
                 <tr>
-                  <th class="px-4 py-3">Quotation code</th>
-                  <th class="px-4 py-3">Customer</th>
-                  <th class="px-4 py-3">Ref enquiry</th>
-                  <th class="px-4 py-3">Valid until</th>
-                  <th class="px-4 py-3 text-right">Grand total</th>
-                  <th class="px-4 py-3">Status</th>
-                  <th class="px-4 py-3 text-right">Action</th>
+                  <th className="px-5 py-3.5">Quotation Code</th>
+                  <th className="px-5 py-3.5">Customer</th>
+                  <th className="px-5 py-3.5">Ref Enquiry</th>
+                  <th className="px-5 py-3.5">Valid Until</th>
+                  <th className="px-5 py-3.5 text-right">Grand Total</th>
+                  <th className="px-5 py-3.5">Status</th>
+                  <th className="px-5 py-3.5 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-[#3A4145]">
+              <tbody className="divide-y divide-slate-100">
                 {quotations.map((quo) => (
-                  <tr key={quo.id} class="hover:bg-[#2A3034] transition-colors">
-                    <td class="px-4 py-3 font-mono font-semibold text-[#5B84A8]">
+                  <tr key={quo.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-5 py-4 font-mono font-bold text-blue-600">
                       {quo.quotation_number}
                     </td>
-                    <td class="px-4 py-3 text-[#E9E6DF] font-medium">
+                    <td className="px-5 py-4 text-slate-900 font-semibold">
                       {quo.customer?.company_name}
                     </td>
-                    <td class="px-4 py-3 font-mono text-[#8F9799]">
+                    <td className="px-5 py-4 font-mono text-slate-600">
                       {quo.enquiry?.enquiry_number}
                     </td>
-                    <td class="px-4 py-3 font-mono text-[#8F9799]">
+                    <td className="px-5 py-4 font-mono text-slate-600">
                       {new Date(quo.valid_until).toISOString().split('T')[0]}
                     </td>
-                    <td class="px-4 py-3 text-right font-mono font-semibold text-[#E9E6DF]">
+                    <td className="px-5 py-4 text-right font-mono font-bold text-slate-900">
                       ₹{parseFloat(quo.grand_total).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </td>
-                    <td class="px-4 py-3">
-                      <span class={`inline-block px-2 py-0.5 text-[11px] font-mono border-l-2 bg-[#1B1F22] rounded-[2px] ${getStatusBorderColor(quo.status)}`}>
+                    <td className="px-5 py-4">
+                      <span className={`inline-block px-2.5 py-1 text-[11px] font-semibold rounded-md ${getStatusBadge(quo.status)}`}>
                         {quo.status}
                       </span>
                     </td>
-                    <td class="px-4 py-3 text-right space-x-1.5 font-mono">
+                    <td className="px-5 py-4 text-right space-x-2 font-mono">
                       <button
                         onClick={() => setSelectedQuotation(quo)}
-                        class="px-2 py-1 text-xs border border-[#3A4145] text-[#E9E6DF] hover:bg-[#2A3034] rounded-[4px]"
+                        className="px-3 py-1.5 text-xs bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-md font-sans font-medium transition-colors"
                       >
                         Inspect
                       </button>
@@ -281,9 +281,9 @@ export default function QuotationsPage() {
                       {quo.status === 'DRAFT' && (
                         <button
                           onClick={() => handleStatusChange(quo.id, 'SENT')}
-                          class="px-2 py-1 text-xs border border-[#3A4145] text-[#D99A3D] hover:bg-[#2A3034] rounded-[4px]"
+                          className="px-3 py-1.5 text-xs bg-amber-50 border border-amber-300 text-amber-800 hover:bg-amber-100 rounded-md font-sans font-medium transition-colors"
                         >
-                          Mark sent
+                          Mark Sent
                         </button>
                       )}
 
@@ -291,13 +291,13 @@ export default function QuotationsPage() {
                         <>
                           <button
                             onClick={() => handleStatusChange(quo.id, 'ACCEPTED')}
-                            class="px-2 py-1 text-xs border border-[#5A9E7A] text-[#5A9E7A] hover:bg-[#5A9E7A]/10 rounded-[4px]"
+                            className="px-3 py-1.5 text-xs bg-emerald-50 border border-emerald-300 text-emerald-800 hover:bg-emerald-100 rounded-md font-sans font-medium transition-colors"
                           >
                             Accept
                           </button>
                           <button
                             onClick={() => handleStatusChange(quo.id, 'REJECTED')}
-                            class="px-2 py-1 text-xs border border-[#B8543F] text-[#B8543F] hover:bg-[#B8543F]/10 rounded-[4px]"
+                            className="px-3 py-1.5 text-xs bg-rose-50 border border-rose-300 text-rose-800 hover:bg-rose-100 rounded-md font-sans font-medium transition-colors"
                           >
                             Reject
                           </button>
@@ -307,14 +307,14 @@ export default function QuotationsPage() {
                       {quo.status === 'ACCEPTED' && !quo.sales_order && (
                         <button
                           onClick={() => handleConvertOrder(quo.id)}
-                          class="px-2.5 py-1 text-xs bg-[#5A9E7A] text-[#1B1F22] font-semibold hover:bg-[#4d8a6a] rounded-[4px]"
+                          className="px-3.5 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-medium rounded-md shadow-sm transition-colors"
                         >
-                          Convert to order
+                          Convert to Order
                         </button>
                       )}
 
                       {quo.sales_order && (
-                        <span class="text-[11px] text-[#5A9E7A] px-1.5 py-0.5 border border-[#5A9E7A]/40 bg-[#1B1F22]">
+                        <span className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-md font-mono">
                           Order: {quo.sales_order.order_number}
                         </span>
                       )}
@@ -329,80 +329,82 @@ export default function QuotationsPage() {
 
       {/* Detail Modal */}
       {selectedQuotation && (
-        <div class="fixed inset-0 z-50 bg-[#1B1F22]/80 flex items-center justify-center p-4">
-          <div class="bg-[#23282C] border border-[#3A4145] max-w-3xl w-full p-5 space-y-4 rounded-[4px]">
-            <div class="flex items-center justify-between pb-3 border-b border-[#3A4145]">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-xl max-w-3xl w-full p-6 space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div>
-                <span class="text-[11px] font-mono text-[#8F9799] uppercase">Quotation calculation sheet</span>
-                <h2 class="text-base font-semibold text-[#E9E6DF]">{selectedQuotation.quotation_number}</h2>
+                <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">Quotation Sheet</span>
+                <h2 className="text-lg font-bold text-slate-900">{selectedQuotation.quotation_number}</h2>
               </div>
               <button
                 onClick={() => setSelectedQuotation(null)}
-                class="px-2 py-1 text-xs text-[#8F9799] border border-[#3A4145]"
+                className="px-3 py-1.5 text-xs text-slate-600 border border-slate-300 hover:bg-slate-100 rounded-lg transition-colors"
               >
                 Close
               </button>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-[#1B1F22] border border-[#3A4145] p-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs bg-slate-50 border border-slate-200 rounded-xl p-4">
               <div>
-                <span class="block text-[10px] text-[#8F9799] uppercase font-mono">Customer</span>
-                <span class="font-medium text-[#E9E6DF]">{selectedQuotation.customer?.company_name}</span>
+                <span className="block text-[10px] text-slate-500 uppercase font-mono font-semibold">Customer</span>
+                <span className="font-semibold text-slate-900 mt-0.5 block">{selectedQuotation.customer?.company_name}</span>
               </div>
               <div>
-                <span class="block text-[10px] text-[#8F9799] uppercase font-mono">Ref enquiry</span>
-                <span class="font-mono text-[#5B84A8]">{selectedQuotation.enquiry?.enquiry_number}</span>
+                <span className="block text-[10px] text-slate-500 uppercase font-mono font-semibold">Ref Enquiry</span>
+                <span className="font-mono text-blue-600 mt-0.5 block font-medium">{selectedQuotation.enquiry?.enquiry_number}</span>
               </div>
               <div>
-                <span class="block text-[10px] text-[#8F9799] uppercase font-mono">Valid until</span>
-                <span class="font-mono text-[#E9E6DF]">{new Date(selectedQuotation.valid_until).toISOString().split('T')[0]}</span>
+                <span className="block text-[10px] text-slate-500 uppercase font-mono font-semibold">Valid Until</span>
+                <span className="font-mono text-slate-800 mt-0.5 block">{new Date(selectedQuotation.valid_until).toISOString().split('T')[0]}</span>
               </div>
               <div>
-                <span class="block text-[10px] text-[#8F9799] uppercase font-mono">Status</span>
-                <span class={`inline-block mt-0.5 px-2 py-0.5 text-[11px] font-mono border-l-2 bg-[#23282C] ${getStatusBorderColor(selectedQuotation.status)}`}>
+                <span className="block text-[10px] text-slate-500 uppercase font-mono font-semibold">Status</span>
+                <span className={`inline-block mt-1 px-2.5 py-0.5 text-[11px] font-semibold rounded-md ${getStatusBadge(selectedQuotation.status)}`}>
                   {selectedQuotation.status}
                 </span>
               </div>
             </div>
 
             <div>
-              <span class="block text-xs font-semibold text-[#E9E6DF] mb-2">Line item breakdown</span>
-              <table class="w-full text-left text-xs border border-[#3A4145]">
-                <thead class="bg-[#1B1F22] border-b border-[#3A4145] text-[#8F9799] font-mono text-[11px] uppercase">
-                  <tr>
-                    <th class="p-2">Product name</th>
-                    <th class="p-2 text-right">Qty</th>
-                    <th class="p-2 text-right">Unit price</th>
-                    <th class="p-2 text-right">Disc %</th>
-                    <th class="p-2 text-right">GST %</th>
-                    <th class="p-2 text-right">Line total</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-[#3A4145]">
-                  {selectedQuotation.items?.map((item) => (
-                    <tr key={item.id}>
-                      <td class="p-2 text-[#E9E6DF]">{item.product?.product_name}</td>
-                      <td class="p-2 text-right font-mono text-[#E9E6DF]">{item.quantity}</td>
-                      <td class="p-2 text-right font-mono text-[#8F9799]">₹{parseFloat(item.unit_price).toFixed(2)}</td>
-                      <td class="p-2 text-right font-mono text-[#8F9799]">{parseFloat(item.discount_percent)}%</td>
-                      <td class="p-2 text-right font-mono text-[#8F9799]">{parseFloat(item.gst_percent)}%</td>
-                      <td class="p-2 text-right font-mono font-semibold text-[#E9E6DF]">₹{parseFloat(item.line_amount).toFixed(2)}</td>
+              <span className="block text-xs font-bold text-slate-900 mb-2">Line Item Breakdown</span>
+              <div className="border border-slate-200 rounded-xl overflow-hidden">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold text-[11px] uppercase">
+                    <tr>
+                      <th className="p-3">Product Name</th>
+                      <th className="p-3 text-right">Qty</th>
+                      <th className="p-3 text-right">Unit Price</th>
+                      <th className="p-3 text-right">Disc %</th>
+                      <th className="p-3 text-right">GST %</th>
+                      <th className="p-3 text-right">Line Total</th>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot class="bg-[#1B1F22] border-t border-[#3A4145] font-mono">
-                  <tr>
-                    <td colSpan="5" class="p-2 text-right text-[#8F9799] uppercase text-[10px]">Server grand total:</td>
-                    <td class="p-2 text-right text-[#D99A3D] font-bold text-sm">₹{parseFloat(selectedQuotation.grand_total).toFixed(2)}</td>
-                  </tr>
-                </tfoot>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {selectedQuotation.items?.map((item) => (
+                      <tr key={item.id} className="hover:bg-slate-50/50">
+                        <td className="p-3 font-medium text-slate-900">{item.product?.product_name}</td>
+                        <td className="p-3 text-right font-mono text-slate-800 font-semibold">{item.quantity}</td>
+                        <td className="p-3 text-right font-mono text-slate-600">₹{parseFloat(item.unit_price).toFixed(2)}</td>
+                        <td className="p-3 text-right font-mono text-slate-600">{parseFloat(item.discount_percent)}%</td>
+                        <td className="p-3 text-right font-mono text-slate-600">{parseFloat(item.gst_percent)}%</td>
+                        <td className="p-3 text-right font-mono font-bold text-slate-900">₹{parseFloat(item.line_amount).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot className="bg-slate-50 border-t border-slate-200 font-mono">
+                    <tr>
+                      <td colSpan="5" className="p-3 text-right text-slate-600 uppercase text-[10px] font-bold">Grand Total:</td>
+                      <td className="p-3 text-right text-blue-600 font-bold text-sm">₹{parseFloat(selectedQuotation.grand_total).toFixed(2)}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
             </div>
 
-            <div class="pt-2 flex justify-end">
+            <div className="pt-2 flex justify-end">
               <button
                 onClick={() => setSelectedQuotation(null)}
-                class="px-3 py-1.5 border border-[#3A4145] text-xs text-[#E9E6DF] hover:bg-[#2A3034] rounded-[4px]"
+                className="px-4 py-2 border border-slate-300 text-xs text-slate-700 font-medium hover:bg-slate-100 rounded-lg transition-colors"
               >
                 Close
               </button>
@@ -413,35 +415,35 @@ export default function QuotationsPage() {
 
       {/* Create Modal */}
       {isCreateOpen && (
-        <div class="fixed inset-0 z-50 bg-[#1B1F22]/80 flex items-center justify-center p-4">
-          <div class="bg-[#23282C] border border-[#3A4145] max-w-3xl w-full p-5 space-y-4 rounded-[4px]">
-            <div class="flex items-center justify-between pb-3 border-b border-[#3A4145]">
-              <h2 class="text-base font-semibold text-[#E9E6DF]">Draft price quotation</h2>
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-xl max-w-3xl w-full p-6 space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h2 className="text-lg font-bold text-slate-900">Draft Price Quotation</h2>
               <button
                 onClick={() => setIsCreateOpen(false)}
-                class="px-2 py-1 text-xs text-[#8F9799] border border-[#3A4145]"
+                className="px-3 py-1.5 text-xs text-slate-600 border border-slate-300 hover:bg-slate-100 rounded-lg transition-colors"
               >
                 Cancel
               </button>
             </div>
 
             {formError && (
-              <div class="bg-[#1B1F22] border-l-2 border-[#B8543F] p-3 text-xs font-mono text-[#B8543F]">
+              <div className="bg-rose-50 border border-rose-200 p-3.5 rounded-xl text-xs font-medium text-rose-700">
                 {formError}
               </div>
             )}
 
-            <form onSubmit={handleCreateSubmit} class="space-y-3 text-xs">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-[#8F9799] mb-1">Customer enquiry</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Customer Enquiry</label>
                   <select
                     required
                     value={enquiryId}
                     onChange={(e) => handleEnquirySelect(e.target.value)}
-                    class="w-full bg-[#1B1F22] border border-[#3A4145] p-2 text-xs text-[#E9E6DF] rounded-[4px]"
+                    className="w-full bg-white border border-slate-300 p-2.5 text-xs text-slate-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   >
-                    <option value="">Select enquiry</option>
+                    <option value="">Select Enquiry</option>
                     {enquiries.map((e) => (
                       <option key={e.id} value={e.id}>
                         {e.enquiry_number} - {e.customer?.company_name} ({e.status})
@@ -451,47 +453,47 @@ export default function QuotationsPage() {
                 </div>
 
                 <div>
-                  <label class="block text-[#8F9799] mb-1">Valid until date</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Valid Until Date</label>
                   <input
                     type="date"
                     required
                     value={validUntil}
                     onChange={(e) => setValidUntil(e.target.value)}
-                    class="w-full bg-[#1B1F22] border border-[#3A4145] p-2 text-xs font-mono text-[#E9E6DF] rounded-[4px]"
+                    className="w-full bg-white border border-slate-300 p-2.5 text-xs font-mono text-slate-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   />
                 </div>
               </div>
 
-              {/* Items Pricing Table */}
+              {/* Items Pricing Matrix */}
               <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="block text-[#E9E6DF] font-semibold">Pricing matrix</span>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="block text-slate-900 font-bold">Pricing Matrix</span>
                   <button
                     type="button"
                     onClick={handleAddItemRow}
-                    class="text-xs text-[#5B84A8] hover:underline font-mono"
+                    className="text-xs text-blue-600 font-semibold hover:underline"
                   >
-                    + Add item row
+                    + Add Item Row
                   </button>
                 </div>
 
-                <div class="border border-[#3A4145]">
-                  <table class="w-full text-left text-xs">
-                    <thead class="bg-[#1B1F22] border-b border-[#3A4145] text-[#8F9799] font-mono text-[11px] uppercase">
+                <div className="border border-slate-200 rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold text-[11px] uppercase">
                       <tr>
-                        <th class="p-2">Product</th>
-                        <th class="p-2 w-16 text-center">Qty</th>
-                        <th class="p-2 w-24 text-center">Price (₹)</th>
-                        <th class="p-2 w-16 text-center">Disc %</th>
-                        <th class="p-2 w-16 text-center">GST %</th>
-                        <th class="p-2 text-right">Line total</th>
-                        <th class="p-2 w-10"></th>
+                        <th className="p-2.5">Product</th>
+                        <th className="p-2.5 w-16 text-center">Qty</th>
+                        <th className="p-2.5 w-24 text-center">Price (₹)</th>
+                        <th className="p-2.5 w-16 text-center">Disc %</th>
+                        <th className="p-2.5 w-16 text-center">GST %</th>
+                        <th className="p-2.5 text-right">Line Total</th>
+                        <th className="p-2.5 w-10"></th>
                       </tr>
                     </thead>
-                    <tbody class="divide-y divide-[#3A4145]">
+                    <tbody className="divide-y divide-slate-100">
                       {items.map((item, index) => (
-                        <tr key={index} class="bg-[#23282C]">
-                          <td class="p-1.5">
+                        <tr key={index} className="bg-white">
+                          <td className="p-2">
                             <select
                               required
                               value={item.product_id}
@@ -503,34 +505,34 @@ export default function QuotationsPage() {
                                   handleItemChange(index, 'unit_price', parseFloat(prod.base_price));
                                 }
                               }}
-                              class="w-full bg-[#1B1F22] border border-[#3A4145] p-1.5 text-xs text-[#E9E6DF] rounded-[4px]"
+                              className="w-full bg-white border border-slate-300 p-2 text-xs text-slate-900 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             >
-                              <option value="">Select product</option>
+                              <option value="">Select Product</option>
                               {products.map(p => (
                                 <option key={p.id} value={p.id}>{p.product_code} - {p.product_name}</option>
                               ))}
                             </select>
                           </td>
-                          <td class="p-1.5">
+                          <td className="p-2">
                             <input
                               type="number"
                               min="1"
                               value={item.quantity}
                               onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                              class="w-full bg-[#1B1F22] border border-[#3A4145] p-1.5 text-xs font-mono text-[#E9E6DF] text-center rounded-[4px]"
+                              className="w-full bg-white border border-slate-300 p-2 text-xs font-mono text-slate-900 text-center rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             />
                           </td>
-                          <td class="p-1.5">
+                          <td className="p-2">
                             <input
                               type="number"
                               step="0.01"
                               min="0"
                               value={item.unit_price}
                               onChange={(e) => handleItemChange(index, 'unit_price', e.target.value)}
-                              class="w-full bg-[#1B1F22] border border-[#3A4145] p-1.5 text-xs font-mono text-[#E9E6DF] text-center rounded-[4px]"
+                              className="w-full bg-white border border-slate-300 p-2 text-xs font-mono text-slate-900 text-center rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             />
                           </td>
-                          <td class="p-1.5">
+                          <td className="p-2">
                             <input
                               type="number"
                               step="0.1"
@@ -538,10 +540,10 @@ export default function QuotationsPage() {
                               max="100"
                               value={item.discount_percent}
                               onChange={(e) => handleItemChange(index, 'discount_percent', e.target.value)}
-                              class="w-full bg-[#1B1F22] border border-[#3A4145] p-1.5 text-xs font-mono text-[#E9E6DF] text-center rounded-[4px]"
+                              className="w-full bg-white border border-slate-300 p-2 text-xs font-mono text-slate-900 text-center rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             />
                           </td>
-                          <td class="p-1.5">
+                          <td className="p-2">
                             <input
                               type="number"
                               step="0.1"
@@ -549,28 +551,28 @@ export default function QuotationsPage() {
                               max="100"
                               value={item.gst_percent}
                               onChange={(e) => handleItemChange(index, 'gst_percent', e.target.value)}
-                              class="w-full bg-[#1B1F22] border border-[#3A4145] p-1.5 text-xs font-mono text-[#E9E6DF] text-center rounded-[4px]"
+                              className="w-full bg-white border border-slate-300 p-2 text-xs font-mono text-slate-900 text-center rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             />
                           </td>
-                          <td class="p-1.5 text-right font-mono font-semibold text-[#E9E6DF]">
+                          <td className="p-2 text-right font-mono font-bold text-slate-900">
                             ₹{calculateLineAmount(item).toFixed(2)}
                           </td>
-                          <td class="p-1.5 text-center">
+                          <td className="p-2 text-center">
                             <button
                               type="button"
                               onClick={() => handleRemoveItemRow(index)}
-                              class="text-[#B8543F] hover:underline font-mono text-xs"
+                              className="text-rose-600 hover:text-rose-800 font-bold text-xs p-1"
                             >
-                              x
+                              ✕
                             </button>
                           </td>
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot class="bg-[#1B1F22] border-t border-[#3A4145] font-mono">
+                    <tfoot className="bg-slate-50 border-t border-slate-200 font-mono">
                       <tr>
-                        <td colSpan="5" class="p-2 text-right text-[#8F9799] uppercase text-[10px]">Calculated grand total:</td>
-                        <td class="p-2 text-right font-bold text-[#D99A3D]">
+                        <td colSpan="5" className="p-3 text-right text-slate-600 uppercase text-[10px] font-bold">Calculated Grand Total:</td>
+                        <td className="p-3 text-right font-bold text-blue-600 text-sm">
                           ₹{calculateGrandTotal().toFixed(2)}
                         </td>
                         <td></td>
@@ -580,20 +582,20 @@ export default function QuotationsPage() {
                 </div>
               </div>
 
-              <div class="pt-3 flex justify-end gap-2 border-t border-[#3A4145]">
+              <div className="pt-3 flex justify-end gap-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  class="px-3 py-1.5 border border-[#3A4145] text-xs text-[#E9E6DF] hover:bg-[#2A3034] rounded-[4px]"
+                  className="px-4 py-2 border border-slate-300 text-xs font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  class="bg-[#D99A3D] text-[#1B1F22] font-semibold text-xs px-4 py-1.5 rounded-[4px] hover:bg-[#c48933] disabled:opacity-50"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs px-5 py-2 rounded-lg shadow-sm disabled:opacity-50 transition-colors"
                 >
-                  {submitting ? 'Saving...' : 'Record quotation'}
+                  {submitting ? 'Saving...' : 'Record Quotation'}
                 </button>
               </div>
             </form>

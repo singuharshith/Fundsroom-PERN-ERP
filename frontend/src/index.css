@@ -3,16 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --bg: #1B1F22;
-  --surface: #23282C;
-  --surface-raised: #2A3034;
-  --border: #3A4145;
-  --text: #E9E6DF;
-  --text-muted: #8F9799;
-  --accent-amber: #D99A3D;
-  --accent-green: #5A9E7A;
-  --accent-red: #B8543F;
-  --accent-blue: #5B84A8;
+  --bg: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-raised: #F1F5F9;
+  --border: #E2E8F0;
+  --text: #0F172A;
+  --text-muted: #64748B;
+  --accent-blue: #2563EB;
+  --accent-emerald: #059669;
+  --accent-amber: #D97706;
+  --accent-rose: #DC2626;
+  --accent-purple: #7C3AED;
 }
 
 body {
@@ -28,28 +29,27 @@ body {
   font-family: 'IBM Plex Mono', monospace !important;
 }
 
-/* Custom Warehouse Terminal Scrollbars */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg);
+  background: #F1F5F9;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 2px;
+  background: #CBD5E1;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: #94A3B8;
 }
 
-/* Pulse animation for stock reservation */
-@keyframes stockPulse {
-  0% { background-color: rgba(217, 154, 61, 0.4); color: #FFF; }
+@keyframes pulseHighlight {
+  0% { background-color: #FEF3C7; color: #92400E; }
   100% { background-color: transparent; }
 }
 
 .animate-pulse-amber {
-  animation: stockPulse 600ms ease-out forwards;
+  animation: pulseHighlight 800ms ease-out forwards;
 }

@@ -91,18 +91,18 @@ export default function SalesOrdersPage() {
     }
   };
 
-  const getStatusBorderColor = (status) => {
+  const getStatusBadge = (status) => {
     switch (status) {
       case 'PENDING':
-        return 'border-l-[#D99A3D] text-[#D99A3D]';
+        return 'bg-amber-50 text-amber-800 border border-amber-300';
       case 'CONFIRMED':
-        return 'border-l-[#5B84A8] text-[#5B84A8]';
+        return 'bg-blue-50 text-blue-800 border border-blue-300';
       case 'DISPATCHED':
-        return 'border-l-[#5A9E7A] text-[#5A9E7A]';
+        return 'bg-emerald-50 text-emerald-800 border border-emerald-300';
       case 'CANCELLED':
-        return 'border-l-[#B8543F] text-[#B8543F]';
+        return 'bg-rose-50 text-rose-800 border border-rose-300';
       default:
-        return 'border-l-[#8F9799] text-[#8F9799]';
+        return 'bg-slate-100 text-slate-700 border border-slate-300';
     }
   };
 
@@ -112,94 +112,94 @@ export default function SalesOrdersPage() {
   const dispatchedCount = salesOrders.filter(o => o.status === 'DISPATCHED').length;
 
   return (
-    <div class="space-y-5">
+    <div className="space-y-6">
       {/* Routing Strip Tracker */}
       <WorkflowTracker currentStep={3} />
 
-      {/* Hairline Stat Strip (Rule 4) */}
-      <div class="bg-[#23282C] border border-[#3A4145] grid grid-cols-1 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#3A4145]">
-        <div class="p-4">
-          <div class="font-mono text-2xl font-semibold text-[#E9E6DF]">{totalOrdersCount}</div>
-          <div class="text-xs text-[#8F9799] mt-0.5">Total sales orders</div>
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Sales Orders</div>
+          <div className="font-mono text-2xl font-bold text-slate-900 mt-1">{totalOrdersCount}</div>
         </div>
-        <div class="p-4">
-          <div class="font-mono text-2xl font-semibold text-[#D99A3D]">{pendingCount}</div>
-          <div class="text-xs text-[#8F9799] mt-0.5">Pending reservations</div>
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Pending Reservations</div>
+          <div className="font-mono text-2xl font-bold text-amber-600 mt-1">{pendingCount}</div>
         </div>
-        <div class="p-4">
-          <div class="font-mono text-2xl font-semibold text-[#5B84A8]">{confirmedCount}</div>
-          <div class="text-xs text-[#8F9799] mt-0.5">Confirmed & reserved</div>
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Confirmed & Reserved</div>
+          <div className="font-mono text-2xl font-bold text-blue-600 mt-1">{confirmedCount}</div>
         </div>
-        <div class="p-4">
-          <div class="font-mono text-2xl font-semibold text-[#5A9E7A]">{dispatchedCount}</div>
-          <div class="text-xs text-[#8F9799] mt-0.5">Dispatched orders</div>
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Dispatched Orders</div>
+          <div className="font-mono text-2xl font-bold text-emerald-600 mt-1">{dispatchedCount}</div>
         </div>
       </div>
 
       {/* Section Header */}
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#3A4145] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
         <div>
-          <h1 class="text-lg font-semibold text-[#E9E6DF]">Sales orders & reservations</h1>
-          <p class="text-xs text-[#8F9799] mt-0.5">
-            Confirmed orders lock stock atomically in transaction before final dispatch
+          <h1 className="text-xl font-bold text-slate-900">Sales Orders & Stock Reservations</h1>
+          <p className="text-xs text-slate-600 mt-1">
+            Confirmed orders lock inventory stock atomically in database transactions before final dispatch
           </p>
         </div>
-        <div class="text-xs font-mono text-[#8F9799] bg-[#23282C] border border-[#3A4145] px-3 py-1.5 self-start sm:self-auto">
-          User role: <span class={isAdmin ? 'text-[#D99A3D] font-bold' : 'text-[#5B84A8] font-bold'}>{user?.role}</span>
+        <div className="text-xs font-medium text-slate-700 bg-slate-100 border border-slate-200 px-3.5 py-2 rounded-lg self-start sm:self-auto">
+          Logged-in user: <span className={isAdmin ? 'text-amber-700 font-bold' : 'text-blue-700 font-bold'}>{user?.role}</span>
         </div>
       </div>
 
-      {/* Table (Rule 8) */}
-      <div class="bg-[#23282C] border border-[#3A4145]">
+      {/* Table Card */}
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         {loading ? (
-          <div class="p-8 text-center text-xs font-mono text-[#8F9799]">Querying database records...</div>
+          <div className="p-8 text-center text-xs font-mono text-slate-500">Loading sales orders ledger...</div>
         ) : salesOrders.length === 0 ? (
-          <div class="p-8 text-center text-xs text-[#8F9799]">No sales orders logged for this filter.</div>
+          <div className="p-8 text-center text-xs text-slate-500">No sales orders found in ledger.</div>
         ) : (
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-[#1B1F22] border-b border-[#3A4145] text-[#8F9799] font-mono text-[11px] uppercase">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold text-[11px] uppercase tracking-wider">
                 <tr>
-                  <th class="px-4 py-3">Order code</th>
-                  <th class="px-4 py-3">Customer</th>
-                  <th class="px-4 py-3">Order date</th>
-                  <th class="px-4 py-3 text-right">Total amount</th>
-                  <th class="px-4 py-3">Status</th>
-                  <th class="px-4 py-3 text-right">Action</th>
+                  <th className="px-5 py-3.5">Order Code</th>
+                  <th className="px-5 py-3.5">Customer</th>
+                  <th className="px-5 py-3.5">Order Date</th>
+                  <th className="px-5 py-3.5 text-right">Total Amount</th>
+                  <th className="px-5 py-3.5">Status</th>
+                  <th className="px-5 py-3.5 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-[#3A4145]">
+              <tbody className="divide-y divide-slate-100">
                 {salesOrders.map((order) => {
                   const isPulsing = pulsingOrderId === order.id;
 
                   return (
                     <tr
                       key={order.id}
-                      class={`hover:bg-[#2A3034] transition-colors ${
-                        isPulsing ? 'animate-pulse-amber' : ''
+                      className={`hover:bg-slate-50/80 transition-colors ${
+                        isPulsing ? 'bg-amber-50/50' : ''
                       }`}
                     >
-                      <td class="px-4 py-3 font-mono font-semibold text-[#5A9E7A]">
+                      <td className="px-5 py-4 font-mono font-bold text-emerald-600">
                         {order.order_number}
                       </td>
-                      <td class="px-4 py-3 text-[#E9E6DF] font-medium">
+                      <td className="px-5 py-4 text-slate-900 font-semibold">
                         {order.customer?.company_name}
                       </td>
-                      <td class="px-4 py-3 font-mono text-[#8F9799]">
+                      <td className="px-5 py-4 font-mono text-slate-600">
                         {new Date(order.order_date).toISOString().split('T')[0]}
                       </td>
-                      <td class="px-4 py-3 text-right font-mono font-semibold text-[#E9E6DF]">
+                      <td className="px-5 py-4 text-right font-mono font-bold text-slate-900">
                         ₹{parseFloat(order.total_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </td>
-                      <td class="px-4 py-3">
-                        <span class={`inline-block px-2 py-0.5 text-[11px] font-mono border-l-2 bg-[#1B1F22] rounded-[2px] ${getStatusBorderColor(order.status)}`}>
+                      <td className="px-5 py-4">
+                        <span className={`inline-block px-2.5 py-1 text-[11px] font-semibold rounded-md ${getStatusBadge(order.status)}`}>
                           {order.status}
                         </span>
                       </td>
-                      <td class="px-4 py-3 text-right space-x-1.5 font-mono">
+                      <td className="px-5 py-4 text-right space-x-2 font-mono">
                         <button
                           onClick={() => setSelectedOrder(order)}
-                          class="px-2 py-1 text-xs border border-[#3A4145] text-[#E9E6DF] hover:bg-[#2A3034] rounded-[4px]"
+                          className="px-3 py-1.5 text-xs bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-md font-sans font-medium transition-colors"
                         >
                           Inspect
                         </button>
@@ -208,14 +208,14 @@ export default function SalesOrdersPage() {
                           isAdmin ? (
                             <button
                               onClick={() => handleConfirmReservation(order.id)}
-                              class="px-2.5 py-1 text-xs bg-[#D99A3D] text-[#1B1F22] font-semibold hover:bg-[#c48933] rounded-[4px]"
+                              className="px-3.5 py-1.5 text-xs bg-amber-500 hover:bg-amber-600 text-white font-sans font-semibold rounded-md shadow-sm transition-colors"
                             >
-                              Reserve stock
+                              Reserve Stock
                             </button>
                           ) : (
                             <button
                               disabled
-                              class="px-2 py-1 text-xs border border-[#3A4145] text-[#8F9799] opacity-50 rounded-[4px] cursor-not-allowed"
+                              className="px-3 py-1.5 text-xs bg-slate-100 border border-slate-200 text-slate-400 rounded-md font-sans cursor-not-allowed"
                             >
                               Reserve (Admin only)
                             </button>
@@ -226,14 +226,14 @@ export default function SalesOrdersPage() {
                           isAdmin ? (
                             <button
                               onClick={() => handleOpenDispatch(order)}
-                              class="px-2.5 py-1 text-xs bg-[#5A9E7A] text-[#1B1F22] font-semibold hover:bg-[#4d8a6a] rounded-[4px]"
+                              className="px-3.5 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-semibold rounded-md shadow-sm transition-colors"
                             >
                               Dispatch
                             </button>
                           ) : (
                             <button
                               disabled
-                              class="px-2 py-1 text-xs border border-[#3A4145] text-[#8F9799] opacity-50 rounded-[4px] cursor-not-allowed"
+                              className="px-3 py-1.5 text-xs bg-slate-100 border border-slate-200 text-slate-400 rounded-md font-sans cursor-not-allowed"
                             >
                               Dispatch (Admin only)
                             </button>
@@ -251,114 +251,116 @@ export default function SalesOrdersPage() {
 
       {/* Detail Modal */}
       {selectedOrder && (
-        <div class="fixed inset-0 z-50 bg-[#1B1F22]/80 flex items-center justify-center p-4">
-          <div class="bg-[#23282C] border border-[#3A4145] max-w-3xl w-full p-5 space-y-4 rounded-[4px]">
-            <div class="flex items-center justify-between pb-3 border-b border-[#3A4145]">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-xl max-w-3xl w-full p-6 space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div>
-                <span class="text-[11px] font-mono text-[#8F9799] uppercase">Sales order ledger entry</span>
-                <h2 class="text-base font-semibold text-[#E9E6DF]">{selectedOrder.order_number}</h2>
+                <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">Sales Order Ledger Entry</span>
+                <h2 className="text-lg font-bold text-slate-900">{selectedOrder.order_number}</h2>
               </div>
               <button
                 onClick={() => setSelectedOrder(null)}
-                class="px-2 py-1 text-xs text-[#8F9799] border border-[#3A4145]"
+                className="px-3 py-1.5 text-xs text-slate-600 border border-slate-300 hover:bg-slate-100 rounded-lg transition-colors"
               >
                 Close
               </button>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-[#1B1F22] border border-[#3A4145] p-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs bg-slate-50 border border-slate-200 rounded-xl p-4">
               <div>
-                <span class="block text-[10px] text-[#8F9799] uppercase font-mono">Customer</span>
-                <span class="font-medium text-[#E9E6DF]">{selectedOrder.customer?.company_name}</span>
+                <span className="block text-[10px] text-slate-500 uppercase font-mono font-semibold">Customer</span>
+                <span className="font-semibold text-slate-900 mt-0.5 block">{selectedOrder.customer?.company_name}</span>
               </div>
               <div>
-                <span class="block text-[10px] text-[#8F9799] uppercase font-mono">Order date</span>
-                <span class="font-mono text-[#E9E6DF]">{new Date(selectedOrder.order_date).toISOString().split('T')[0]}</span>
+                <span className="block text-[10px] text-slate-500 uppercase font-mono font-semibold">Order Date</span>
+                <span className="font-mono text-slate-800 mt-0.5 block">{new Date(selectedOrder.order_date).toISOString().split('T')[0]}</span>
               </div>
               <div>
-                <span class="block text-[10px] text-[#8F9799] uppercase font-mono">Status</span>
-                <span class={`inline-block mt-0.5 px-2 py-0.5 text-[11px] font-mono border-l-2 bg-[#23282C] ${getStatusBorderColor(selectedOrder.status)}`}>
+                <span className="block text-[10px] text-slate-500 uppercase font-mono font-semibold">Status</span>
+                <span className={`inline-block mt-1 px-2.5 py-0.5 text-[11px] font-semibold rounded-md ${getStatusBadge(selectedOrder.status)}`}>
                   {selectedOrder.status}
                 </span>
               </div>
               <div>
-                <span class="block text-[10px] text-[#8F9799] uppercase font-mono">Total amount</span>
-                <span class="font-mono text-[#E9E6DF] font-semibold">₹{parseFloat(selectedOrder.total_amount).toFixed(2)}</span>
+                <span className="block text-[10px] text-slate-500 uppercase font-mono font-semibold">Total Amount</span>
+                <span className="font-mono text-slate-900 font-bold mt-0.5 block">₹{parseFloat(selectedOrder.total_amount).toFixed(2)}</span>
               </div>
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
-                <span class="block text-xs font-semibold text-[#E9E6DF]">Stock reservation ledger</span>
-                <span class="font-mono text-[11px] text-[#8F9799]">AVAIL = PHYS − RSVD</span>
+              <div className="flex items-center justify-between mb-2">
+                <span className="block text-xs font-bold text-slate-900">Stock Reservation Ledger</span>
+                <span className="font-mono text-[11px] text-slate-500 font-semibold bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">AVAIL = PHYS − RSVD</span>
               </div>
-              <table class="w-full text-left text-xs border border-[#3A4145]">
-                <thead class="bg-[#1B1F22] border-b border-[#3A4145] text-[#8F9799] font-mono text-[11px] uppercase">
-                  <tr>
-                    <th class="p-2">Code</th>
-                    <th class="p-2">Product name</th>
-                    <th class="p-2 text-right">Requested</th>
-                    <th class="p-2 text-right">Physical</th>
-                    <th class="p-2 text-right">Reserved</th>
-                    <th class="p-2 text-right">Available</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-[#3A4145]">
-                  {selectedOrder.items?.map((item) => {
-                    const inv = item.product?.inventory;
-                    const available = inv ? inv.available_quantity : 0;
-                    const isShort = selectedOrder.status === 'PENDING' && available < item.quantity;
+              <div className="border border-slate-200 rounded-xl overflow-hidden">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold text-[11px] uppercase">
+                    <tr>
+                      <th className="p-3">Code</th>
+                      <th className="p-3">Product Name</th>
+                      <th className="p-3 text-right">Requested</th>
+                      <th className="p-3 text-right">Physical</th>
+                      <th className="p-3 text-right">Reserved</th>
+                      <th className="p-3 text-right">Available</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {selectedOrder.items?.map((item) => {
+                      const inv = item.product?.inventory;
+                      const available = inv ? inv.available_quantity : 0;
+                      const isShort = selectedOrder.status === 'PENDING' && available < item.quantity;
 
-                    return (
-                      <tr key={item.id} class={isShort ? 'bg-[#B8543F]/10' : ''}>
-                        <td class="p-2 font-mono text-[#5B84A8]">{item.product?.product_code}</td>
-                        <td class="p-2 text-[#E9E6DF]">{item.product?.product_name}</td>
-                        <td class="p-2 text-right font-mono font-semibold text-[#E9E6DF]">{item.quantity}</td>
-                        <td class="p-2 text-right font-mono text-[#8F9799]">{inv ? inv.physical_quantity : 0}</td>
-                        <td class="p-2 text-right font-mono text-[#D99A3D]">{inv ? inv.reserved_quantity : 0}</td>
-                        <td class={`p-2 text-right font-mono font-bold ${isShort ? 'text-[#B8543F]' : 'text-[#5A9E7A]'}`}>
-                          {available}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                      return (
+                        <tr key={item.id} className={isShort ? 'bg-rose-50/60' : 'hover:bg-slate-50/50'}>
+                          <td className="p-3 font-mono font-bold text-blue-600">{item.product?.product_code}</td>
+                          <td className="p-3 font-medium text-slate-900">{item.product?.product_name}</td>
+                          <td className="p-3 text-right font-mono font-bold text-slate-900">{item.quantity}</td>
+                          <td className="p-3 text-right font-mono text-slate-600">{inv ? inv.physical_quantity : 0}</td>
+                          <td className="p-3 text-right font-mono text-amber-700 font-semibold">{inv ? inv.reserved_quantity : 0}</td>
+                          <td className={`p-3 text-right font-mono font-bold ${isShort ? 'text-rose-600' : 'text-emerald-600'}`}>
+                            {available}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {selectedOrder.dispatches?.length > 0 && (
-              <div class="text-xs bg-[#1B1F22] border border-[#3A4145] p-3 space-y-1">
-                <span class="block text-[10px] font-mono uppercase text-[#5A9E7A]">Dispatch record</span>
+              <div className="text-xs bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
+                <span className="block text-[10px] font-mono font-bold uppercase text-emerald-700">Dispatch Record</span>
                 {selectedOrder.dispatches.map(d => (
-                  <div key={d.id} class="font-mono text-[#E9E6DF]">
-                    {d.dispatch_number} | Vehicle: {d.vehicle_number} | Driver: {d.driver_name}
+                  <div key={d.id} className="font-mono text-slate-800">
+                    {d.dispatch_number} | Vehicle: <span className="font-semibold text-slate-900">{d.vehicle_number}</span> | Driver: <span className="font-semibold text-slate-900">{d.driver_name}</span>
                   </div>
                 ))}
               </div>
             )}
 
-            <div class="pt-2 flex items-center justify-between">
+            <div className="pt-2 flex items-center justify-between">
               <div>
                 {selectedOrder.status === 'PENDING' && isAdmin && (
                   <button
                     onClick={() => handleConfirmReservation(selectedOrder.id)}
-                    class="bg-[#D99A3D] text-[#1B1F22] font-semibold text-xs px-3.5 py-1.5 rounded-[4px] hover:bg-[#c48933]"
+                    className="bg-amber-500 hover:bg-amber-600 text-white font-medium text-xs px-4 py-2 rounded-lg shadow-sm transition-colors"
                   >
-                    Confirm & reserve stock
+                    Confirm & Reserve Stock
                   </button>
                 )}
                 {selectedOrder.status === 'CONFIRMED' && isAdmin && (
                   <button
                     onClick={() => { setSelectedOrder(null); handleOpenDispatch(selectedOrder); }}
-                    class="bg-[#5A9E7A] text-[#1B1F22] font-semibold text-xs px-3.5 py-1.5 rounded-[4px] hover:bg-[#4d8a6a]"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs px-4 py-2 rounded-lg shadow-sm transition-colors"
                   >
-                    Dispatch order
+                    Dispatch Order
                   </button>
                 )}
               </div>
               <button
                 onClick={() => setSelectedOrder(null)}
-                class="px-3 py-1.5 border border-[#3A4145] text-xs text-[#E9E6DF] hover:bg-[#2A3034] rounded-[4px]"
+                className="px-4 py-2 border border-slate-300 text-xs text-slate-700 font-medium hover:bg-slate-100 rounded-lg transition-colors"
               >
                 Close
               </button>
@@ -369,68 +371,68 @@ export default function SalesOrdersPage() {
 
       {/* Dispatch Modal */}
       {dispatchOrder && (
-        <div class="fixed inset-0 z-50 bg-[#1B1F22]/80 flex items-center justify-center p-4">
-          <div class="bg-[#23282C] border border-[#3A4145] max-w-md w-full p-5 space-y-4 rounded-[4px]">
-            <div class="flex items-center justify-between pb-3 border-b border-[#3A4145]">
-              <h2 class="text-base font-semibold text-[#E9E6DF]">Dispatch order {dispatchOrder.order_number}</h2>
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-xl max-w-md w-full p-6 space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h2 className="text-lg font-bold text-slate-900">Dispatch Order {dispatchOrder.order_number}</h2>
               <button
                 onClick={() => setDispatchOrder(null)}
-                class="px-2 py-1 text-xs text-[#8F9799] border border-[#3A4145]"
+                className="px-3 py-1.5 text-xs text-slate-600 border border-slate-300 hover:bg-slate-100 rounded-lg transition-colors"
               >
                 Cancel
               </button>
             </div>
 
             {dispatchError && (
-              <div class="bg-[#1B1F22] border-l-2 border-[#B8543F] p-3 text-xs font-mono text-[#B8543F]">
+              <div className="bg-rose-50 border border-rose-200 p-3 rounded-xl text-xs font-medium text-rose-700">
                 {dispatchError}
               </div>
             )}
 
-            <form onSubmit={handleDispatchSubmit} class="space-y-3 text-xs">
+            <form onSubmit={handleDispatchSubmit} className="space-y-4 text-xs">
               <div>
-                <label class="block text-[#8F9799] mb-1">Vehicle registration number</label>
+                <label className="block text-slate-700 font-semibold mb-1">Vehicle Registration Number</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. MH-12-AB-1234"
                   value={vehicleNumber}
                   onChange={(e) => setVehicleNumber(e.target.value)}
-                  class="w-full bg-[#1B1F22] border border-[#3A4145] p-2 text-xs font-mono text-[#E9E6DF] rounded-[4px]"
+                  className="w-full bg-white border border-slate-300 p-2.5 text-xs font-mono text-slate-900 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
               <div>
-                <label class="block text-[#8F9799] mb-1">Driver name</label>
+                <label className="block text-slate-700 font-semibold mb-1">Driver Name</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Suresh Patil"
                   value={driverName}
                   onChange={(e) => setDriverName(e.target.value)}
-                  class="w-full bg-[#1B1F22] border border-[#3A4145] p-2 text-xs text-[#E9E6DF] rounded-[4px]"
+                  className="w-full bg-white border border-slate-300 p-2.5 text-xs text-slate-900 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
-              <div class="bg-[#1B1F22] border border-[#3A4145] p-3 text-xs text-[#8F9799]">
-                <span class="block font-mono text-[#D99A3D] text-[10px] uppercase mb-1">Transaction effect</span>
-                Physical and reserved inventory stock will be decremented atomically.
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-3.5 text-xs text-slate-700">
+                <span className="block font-mono text-blue-700 text-[10px] font-bold uppercase mb-0.5">Transaction Effect</span>
+                Physical and reserved inventory stock will be decremented atomically upon confirmation.
               </div>
 
-              <div class="pt-3 flex justify-end gap-2 border-t border-[#3A4145]">
+              <div className="pt-3 flex justify-end gap-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setDispatchOrder(null)}
-                  class="px-3 py-1.5 border border-[#3A4145] text-xs text-[#E9E6DF] hover:bg-[#2A3034] rounded-[4px]"
+                  className="px-4 py-2 border border-slate-300 text-xs font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  class="bg-[#5A9E7A] text-[#1B1F22] font-semibold text-xs px-4 py-1.5 rounded-[4px] hover:bg-[#4d8a6a] disabled:opacity-50"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs px-5 py-2 rounded-lg shadow-sm disabled:opacity-50 transition-colors"
                 >
-                  {submitting ? 'Dispatching...' : 'Confirm dispatch'}
+                  {submitting ? 'Dispatching...' : 'Confirm Dispatch'}
                 </button>
               </div>
             </form>

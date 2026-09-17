@@ -8,8 +8,8 @@ export default function ProtectedRoute() {
 
   if (loading) {
     return (
-      <div class="min-h-screen flex items-center justify-center bg-[#1B1F22] text-[#E9E6DF]">
-        <div class="text-center font-mono text-xs text-[#8F9799]">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900">
+        <div className="text-center font-mono text-xs text-slate-500">
           Querying terminal session...
         </div>
       </div>
@@ -21,9 +21,9 @@ export default function ProtectedRoute() {
   }
 
   return (
-    <div class="min-h-screen bg-[#1B1F22] text-[#E9E6DF] flex flex-col">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
       <Navbar />
-      <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         <Outlet />
       </main>
     </div>

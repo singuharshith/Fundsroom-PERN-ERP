@@ -26,20 +26,20 @@ export default function InventoryPage() {
     const available = item.available_quantity;
     if (available <= 0) {
       return (
-        <span class="inline-block px-2 py-0.5 text-[11px] font-mono border-l-2 border-l-[#B8543F] text-[#B8543F] bg-[#1B1F22] rounded-[2px]">
-          Fully reserved
+        <span className="inline-block px-2.5 py-1 text-[11px] font-semibold rounded-md bg-rose-50 text-rose-700 border border-rose-200">
+          Fully Reserved
         </span>
       );
     } else if (available < 50) {
       return (
-        <span class="inline-block px-2 py-0.5 text-[11px] font-mono border-l-2 border-l-[#D99A3D] text-[#D99A3D] bg-[#1B1F22] rounded-[2px]">
-          Low stock
+        <span className="inline-block px-2.5 py-1 text-[11px] font-semibold rounded-md bg-amber-50 text-amber-700 border border-amber-200">
+          Low Stock
         </span>
       );
     }
     return (
-      <span class="inline-block px-2 py-0.5 text-[11px] font-mono border-l-2 border-l-[#5A9E7A] text-[#5A9E7A] bg-[#1B1F22] rounded-[2px]">
-        Healthy stock
+      <span className="inline-block px-2.5 py-1 text-[11px] font-semibold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+        Healthy Stock
       </span>
     );
   };
@@ -50,99 +50,99 @@ export default function InventoryPage() {
   const totalAvailable = inventory.reduce((acc, i) => acc + i.available_quantity, 0);
 
   return (
-    <div class="space-y-5">
-      {/* Routing Strip Tracker */}
+    <div className="space-y-6">
+      {/* Step Tracker */}
       <WorkflowTracker currentStep={4} />
 
-      {/* Hairline Stat Strip (Rule 4) */}
-      <div class="bg-[#23282C] border border-[#3A4145] grid grid-cols-1 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#3A4145]">
-        <div class="p-4">
-          <div class="font-mono text-2xl font-semibold text-[#E9E6DF]">{totalSKUs}</div>
-          <div class="text-xs text-[#8F9799] mt-0.5">Total industrial SKUs</div>
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total SKUs</div>
+          <div className="font-mono text-2xl font-bold text-slate-900 mt-1">{totalSKUs}</div>
         </div>
-        <div class="p-4">
-          <div class="font-mono text-2xl font-semibold text-[#E9E6DF]">{totalPhysical}</div>
-          <div class="text-xs text-[#8F9799] mt-0.5">Physical units in stock</div>
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Physical Stock</div>
+          <div className="font-mono text-2xl font-bold text-slate-900 mt-1">{totalPhysical}</div>
         </div>
-        <div class="p-4">
-          <div class="font-mono text-2xl font-semibold text-[#D99A3D]">{totalReserved}</div>
-          <div class="text-xs text-[#8F9799] mt-0.5">Reserved units</div>
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Reserved Stock</div>
+          <div className="font-mono text-2xl font-bold text-amber-600 mt-1">{totalReserved}</div>
         </div>
-        <div class="p-4">
-          <div class="font-mono text-2xl font-semibold text-[#5A9E7A]">{totalAvailable}</div>
-          <div class="text-xs text-[#8F9799] mt-0.5">Available units</div>
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Available Stock</div>
+          <div className="font-mono text-2xl font-bold text-emerald-600 mt-1">{totalAvailable}</div>
         </div>
       </div>
 
-      {/* Section Header & Formula (Rule 10) */}
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#3A4145] pb-4">
+      {/* Section Header & Formula */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
         <div>
-          <div class="flex items-center gap-3">
-            <h1 class="text-lg font-semibold text-[#E9E6DF]">Inventory stock matrix</h1>
-            <span class="font-mono text-xs text-[#8F9799] bg-[#1B1F22] border border-[#3A4145] px-2 py-0.5">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-bold text-slate-900">Inventory Stock Ledger</h1>
+            <span className="font-mono text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-md">
               AVAIL = PHYS − RSVD
             </span>
           </div>
-          <p class="text-xs text-[#8F9799] mt-0.5">
-            Physical stock ledger vs reserved quantities locked for confirmed orders
+          <p className="text-xs text-slate-600 mt-1">
+            Physical stock ledger vs reserved quantities locked for confirmed sales orders
           </p>
         </div>
         <button
           onClick={fetchInventory}
-          class="px-3.5 py-2 border border-[#3A4145] text-xs text-[#E9E6DF] hover:bg-[#2A3034] transition-colors rounded-[4px] self-start sm:self-auto font-mono"
+          className="px-4 py-2 bg-white border border-slate-300 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg shadow-sm transition-colors self-start sm:self-auto font-sans"
         >
-          Refresh ledger
+          Refresh Ledger
         </button>
       </div>
 
-      {/* Main Table (Rule 8) */}
-      <div class="bg-[#23282C] border border-[#3A4145]">
+      {/* Table Card */}
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         {loading ? (
-          <div class="p-8 text-center text-xs font-mono text-[#8F9799]">Querying database records...</div>
+          <div className="p-8 text-center text-xs font-mono text-slate-500">Loading inventory ledger...</div>
         ) : inventory.length === 0 ? (
-          <div class="p-8 text-center text-xs text-[#8F9799]">No inventory records logged for this filter.</div>
+          <div className="p-8 text-center text-xs text-slate-500">No inventory items found.</div>
         ) : (
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-[#1B1F22] border-b border-[#3A4145] text-[#8F9799] font-mono text-[11px] uppercase">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold text-[11px] uppercase tracking-wider">
                 <tr>
-                  <th class="px-4 py-3">Product code</th>
-                  <th class="px-4 py-3">Description</th>
-                  <th class="px-4 py-3">Category</th>
-                  <th class="px-4 py-3 text-right">Base price (₹)</th>
-                  <th class="px-4 py-3 text-center">Physical qty</th>
-                  <th class="px-4 py-3 text-center">Reserved qty</th>
-                  <th class="px-4 py-3 text-center">Available qty</th>
-                  <th class="px-4 py-3 text-center">Stock status</th>
+                  <th className="px-5 py-3.5">Product Code</th>
+                  <th className="px-5 py-3.5">Description</th>
+                  <th className="px-5 py-3.5">Category</th>
+                  <th className="px-5 py-3.5 text-right">Base Price (₹)</th>
+                  <th className="px-5 py-3.5 text-center">Physical Qty</th>
+                  <th className="px-5 py-3.5 text-center">Reserved Qty</th>
+                  <th className="px-5 py-3.5 text-center">Available Qty</th>
+                  <th className="px-5 py-3.5 text-center">Stock Status</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-[#3A4145]">
+              <tbody className="divide-y divide-slate-100">
                 {inventory.map((item) => (
-                  <tr key={item.id} class="hover:bg-[#2A3034] transition-colors">
-                    <td class="px-4 py-3 font-mono font-semibold text-[#5B84A8]">
+                  <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-5 py-4 font-mono font-bold text-blue-600">
                       {item.product_code}
                     </td>
-                    <td class="px-4 py-3 text-[#E9E6DF] font-medium">
+                    <td className="px-5 py-4 text-slate-900 font-semibold">
                       {item.product_name}
                     </td>
-                    <td class="px-4 py-3 text-[#8F9799]">
-                      <span class="px-1.5 py-0.5 bg-[#1B1F22] border border-[#3A4145] text-[11px] font-mono">
+                    <td className="px-5 py-4 text-slate-600">
+                      <span className="px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-mono rounded">
                         {item.category}
                       </span>
                     </td>
-                    <td class="px-4 py-3 text-right font-mono text-[#E9E6DF]">
+                    <td className="px-5 py-4 text-right font-mono text-slate-800">
                       ₹{parseFloat(item.base_price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </td>
-                    <td class="px-4 py-3 text-center font-mono font-bold text-[#E9E6DF]">
-                      {item.physical_quantity} {item.unit}
+                    <td className="px-5 py-4 text-center font-mono font-bold text-slate-900">
+                      {item.physical_quantity} <span className="text-slate-500 font-normal">{item.unit}</span>
                     </td>
-                    <td class="px-4 py-3 text-center font-mono font-bold text-[#D99A3D]">
-                      {item.reserved_quantity} {item.unit}
+                    <td className="px-5 py-4 text-center font-mono font-bold text-amber-700">
+                      {item.reserved_quantity} <span className="text-slate-500 font-normal">{item.unit}</span>
                     </td>
-                    <td class="px-4 py-3 text-center font-mono font-bold text-[#5A9E7A] text-sm">
-                      {item.available_quantity} {item.unit}
+                    <td className="px-5 py-4 text-center font-mono font-bold text-emerald-600 text-sm">
+                      {item.available_quantity} <span className="text-slate-500 text-xs font-normal">{item.unit}</span>
                     </td>
-                    <td class="px-4 py-3 text-center">
+                    <td className="px-5 py-4 text-center">
                       {getStockStatusTag(item)}
                     </td>
                   </tr>
