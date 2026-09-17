@@ -26,7 +26,11 @@ app.use('/api/products', productRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/customers', customerRoutes);
 
-// Health check endpoint
+// Health check & Root status endpoints
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', name: 'FundsRoom ERP API', version: '1.0.0', health: '/api/health' });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'PERN ERP API is running' });
 });
