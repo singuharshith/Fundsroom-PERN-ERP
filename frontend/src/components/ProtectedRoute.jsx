@@ -8,10 +8,9 @@ export default function ProtectedRoute() {
 
   if (loading) {
     return (
-      <div class="min-h-screen flex items-center justify-center bg-slate-50">
-        <div class="text-center">
-          <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p class="mt-2 text-sm font-medium text-slate-600">Loading session...</p>
+      <div class="min-h-screen flex items-center justify-center bg-[#1B1F22] text-[#E9E6DF]">
+        <div class="text-center font-mono text-xs text-[#8F9799]">
+          Querying terminal session...
         </div>
       </div>
     );
@@ -22,7 +21,7 @@ export default function ProtectedRoute() {
   }
 
   return (
-    <div class="min-h-screen bg-slate-50 flex flex-col">
+    <div class="min-h-screen bg-[#1B1F22] text-[#E9E6DF] flex flex-col">
       <Navbar />
       <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         <Outlet />

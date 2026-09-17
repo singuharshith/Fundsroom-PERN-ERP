@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axios';
 import WorkflowTracker from '../components/WorkflowTracker';
-import { Package, RefreshCw, AlertTriangle, CheckCircle } from 'lucide-react';
 
 export default function InventoryPage() {
   const [inventory, setInventory] = useState([]);
@@ -23,24 +22,24 @@ export default function InventoryPage() {
     }
   };
 
-  const getStockStatusBadge = (item) => {
+  const getStockStatusTag = (item) => {
     const available = item.available_quantity;
     if (available <= 0) {
       return (
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-rose-700 bg-rose-50 rounded-lg border border-rose-200">
-          <AlertTriangle class="w-3 h-3" /> Fully Reserved
+        <span class="inline-block px-2 py-0.5 text-[11px] font-mono border-l-2 border-l-[#B8543F] text-[#B8543F] bg-[#1B1F22] rounded-[2px]">
+          Fully reserved
         </span>
       );
     } else if (available < 50) {
       return (
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-amber-800 bg-amber-50 rounded-lg border border-amber-200">
-          <AlertTriangle class="w-3 h-3" /> Low Stock
+        <span class="inline-block px-2 py-0.5 text-[11px] font-mono border-l-2 border-l-[#D99A3D] text-[#D99A3D] bg-[#1B1F22] rounded-[2px]">
+          Low stock
         </span>
       );
     }
     return (
-      <span class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 rounded-lg border border-emerald-200">
-        <CheckCircle class="w-3 h-3" /> Healthy Stock
+      <span class="inline-block px-2 py-0.5 text-[11px] font-mono border-l-2 border-l-[#5A9E7A] text-[#5A9E7A] bg-[#1B1F22] rounded-[2px]">
+        Healthy stock
       </span>
     );
   };
@@ -51,106 +50,100 @@ export default function InventoryPage() {
   const totalAvailable = inventory.reduce((acc, i) => acc + i.available_quantity, 0);
 
   return (
-    <div class="space-y-6">
-      {/* ERP Stepper Progress */}
+    <div class="space-y-5">
+      {/* Routing Strip Tracker */}
       <WorkflowTracker currentStep={4} />
 
-      {/* KPI Overview Cards */}
-      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Industrial SKUs</span>
-          <div class="text-2xl font-black text-slate-900 mt-1">{totalSKUs}</div>
-          <span class="text-xs text-slate-500 font-medium">Catalog products</span>
+      {/* Hairline Stat Strip (Rule 4) */}
+      <div class="bg-[#23282C] border border-[#3A4145] grid grid-cols-1 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#3A4145]">
+        <div class="p-4">
+          <div class="font-mono text-2xl font-semibold text-[#E9E6DF]">{totalSKUs}</div>
+          <div class="text-xs text-[#8F9799] mt-0.5">Total industrial SKUs</div>
         </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Total Physical Units</span>
-          <div class="text-2xl font-black text-slate-800 mt-1 font-mono">{totalPhysical}</div>
-          <span class="text-xs text-slate-500 font-medium">In warehouse storage</span>
+        <div class="p-4">
+          <div class="font-mono text-2xl font-semibold text-[#E9E6DF]">{totalPhysical}</div>
+          <div class="text-xs text-[#8F9799] mt-0.5">Physical units in stock</div>
         </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Reserved Units</span>
-          <div class="text-2xl font-black text-amber-700 mt-1 font-mono">{totalReserved}</div>
-          <span class="text-xs text-slate-500 font-medium">Locked for confirmed orders</span>
+        <div class="p-4">
+          <div class="font-mono text-2xl font-semibold text-[#D99A3D]">{totalReserved}</div>
+          <div class="text-xs text-[#8F9799] mt-0.5">Reserved units</div>
         </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Available Units</span>
-          <div class="text-2xl font-black text-emerald-700 mt-1 font-mono">{totalAvailable}</div>
-          <span class="text-xs text-slate-500 font-medium">Physical minus Reserved</span>
+        <div class="p-4">
+          <div class="font-mono text-2xl font-semibold text-[#5A9E7A]">{totalAvailable}</div>
+          <div class="text-xs text-[#8F9799] mt-0.5">Available units</div>
         </div>
       </div>
 
-      {/* Page Action Header */}
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+      {/* Section Header & Formula (Rule 10) */}
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#3A4145] pb-4">
         <div>
-          <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <Package class="w-6 h-6 text-amber-600" />
-            Inventory Stock Matrix
-          </h1>
-          <p class="text-xs text-slate-500 mt-0.5">
-            Real-time stock ledger. Formula: Available Quantity = Physical Quantity - Reserved Quantity
+          <div class="flex items-center gap-3">
+            <h1 class="text-lg font-semibold text-[#E9E6DF]">Inventory stock matrix</h1>
+            <span class="font-mono text-xs text-[#8F9799] bg-[#1B1F22] border border-[#3A4145] px-2 py-0.5">
+              AVAIL = PHYS − RSVD
+            </span>
+          </div>
+          <p class="text-xs text-[#8F9799] mt-0.5">
+            Physical stock ledger vs reserved quantities locked for confirmed orders
           </p>
         </div>
         <button
           onClick={fetchInventory}
-          class="flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors self-start sm:self-auto"
+          class="px-3.5 py-2 border border-[#3A4145] text-xs text-[#E9E6DF] hover:bg-[#2A3034] transition-colors rounded-[4px] self-start sm:self-auto font-mono"
         >
-          <RefreshCw class="w-4 h-4" />
-          Refresh Stock Ledger
+          Refresh ledger
         </button>
       </div>
 
-      {/* Main Inventory Table */}
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      {/* Main Table (Rule 8) */}
+      <div class="bg-[#23282C] border border-[#3A4145]">
         {loading ? (
-          <div class="p-12 text-center text-slate-500">Loading inventory data...</div>
+          <div class="p-8 text-center text-xs font-mono text-[#8F9799]">Querying database records...</div>
         ) : inventory.length === 0 ? (
-          <div class="p-12 text-center text-slate-500">No inventory records available.</div>
+          <div class="p-8 text-center text-xs text-[#8F9799]">No inventory records logged for this filter.</div>
         ) : (
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-600">
-              <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-[#1B1F22] border-b border-[#3A4145] text-[#8F9799] font-mono text-[11px] uppercase">
                 <tr>
-                  <th class="px-6 py-3.5">Product Code</th>
-                  <th class="px-6 py-3.5">Product Description</th>
-                  <th class="px-6 py-3.5">Category</th>
-                  <th class="px-6 py-3.5 text-right">Base Price (₹)</th>
-                  <th class="px-6 py-3.5 text-center">Physical Qty</th>
-                  <th class="px-6 py-3.5 text-center">Reserved Qty</th>
-                  <th class="px-6 py-3.5 text-center">Available Qty</th>
-                  <th class="px-6 py-3.5 text-center">Health Status</th>
+                  <th class="px-4 py-3">Product code</th>
+                  <th class="px-4 py-3">Description</th>
+                  <th class="px-4 py-3">Category</th>
+                  <th class="px-4 py-3 text-right">Base price (₹)</th>
+                  <th class="px-4 py-3 text-center">Physical qty</th>
+                  <th class="px-4 py-3 text-center">Reserved qty</th>
+                  <th class="px-4 py-3 text-center">Available qty</th>
+                  <th class="px-4 py-3 text-center">Stock status</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100">
+              <tbody class="divide-y divide-[#3A4145]">
                 {inventory.map((item) => (
-                  <tr key={item.id} class="hover:bg-slate-50/80 transition-colors">
-                    <td class="px-6 py-4 font-mono font-bold text-amber-700 text-xs">
+                  <tr key={item.id} class="hover:bg-[#2A3034] transition-colors">
+                    <td class="px-4 py-3 font-mono font-semibold text-[#5B84A8]">
                       {item.product_code}
                     </td>
-                    <td class="px-6 py-4 font-bold text-slate-900 text-xs">
+                    <td class="px-4 py-3 text-[#E9E6DF] font-medium">
                       {item.product_name}
                     </td>
-                    <td class="px-6 py-4 text-xs font-medium text-slate-500">
-                      <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-[11px] font-bold">
+                    <td class="px-4 py-3 text-[#8F9799]">
+                      <span class="px-1.5 py-0.5 bg-[#1B1F22] border border-[#3A4145] text-[11px] font-mono">
                         {item.category}
                       </span>
                     </td>
-                    <td class="px-6 py-4 text-right font-mono font-semibold text-xs">
+                    <td class="px-4 py-3 text-right font-mono text-[#E9E6DF]">
                       ₹{parseFloat(item.base_price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </td>
-                    <td class="px-6 py-4 text-center font-mono font-black text-slate-900 text-xs">
+                    <td class="px-4 py-3 text-center font-mono font-bold text-[#E9E6DF]">
                       {item.physical_quantity} {item.unit}
                     </td>
-                    <td class="px-6 py-4 text-center font-mono font-black text-amber-700 bg-amber-50/40 text-xs">
+                    <td class="px-4 py-3 text-center font-mono font-bold text-[#D99A3D]">
                       {item.reserved_quantity} {item.unit}
                     </td>
-                    <td class="px-6 py-4 text-center font-mono font-black text-emerald-700 text-sm bg-emerald-50/40">
+                    <td class="px-4 py-3 text-center font-mono font-bold text-[#5A9E7A] text-sm">
                       {item.available_quantity} {item.unit}
                     </td>
-                    <td class="px-6 py-4 text-center">
-                      {getStockStatusBadge(item)}
+                    <td class="px-4 py-3 text-center">
+                      {getStockStatusTag(item)}
                     </td>
                   </tr>
                 ))}

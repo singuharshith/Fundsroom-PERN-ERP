@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --bg: #1B1F22;
+  --surface: #23282C;
+  --surface-raised: #2A3034;
+  --border: #3A4145;
+  --text: #E9E6DF;
+  --text-muted: #8F9799;
+  --accent-amber: #D99A3D;
+  --accent-green: #5A9E7A;
+  --accent-red: #B8543F;
+  --accent-blue: #5B84A8;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-mono {
+  font-family: 'IBM Plex Mono', monospace !important;
+}
+
+/* Custom Warehouse Terminal Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Pulse animation for stock reservation */
+@keyframes stockPulse {
+  0% { background-color: rgba(217, 154, 61, 0.4); color: #FFF; }
+  100% { background-color: transparent; }
+}
+
+.animate-pulse-amber {
+  animation: stockPulse 600ms ease-out forwards;
+}

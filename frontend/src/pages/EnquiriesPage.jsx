@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axios';
 import WorkflowTracker from '../components/WorkflowTracker';
-import { Plus, ClipboardList, Eye, X, Trash2, Calendar, Building, Package, User, ArrowRight, Sparkles } from 'lucide-react';
 
 export default function EnquiriesPage() {
   const [enquiries, setEnquiries] = useState([]);
@@ -61,11 +60,11 @@ export default function EnquiriesPage() {
     setFormError('');
 
     if (!customerId) {
-      setFormError('Please select a customer.');
+      setFormError('Select a customer account.');
       return;
     }
     if (!requiredDate) {
-      setFormError('Please select a required date.');
+      setFormError('Select a required delivery date.');
       return;
     }
 
@@ -75,12 +74,12 @@ export default function EnquiriesPage() {
     }));
 
     if (formattedItems.some(i => !i.product_id || isNaN(i.product_id))) {
-      setFormError('Please select a valid product for all line items.');
+      setFormError('Select a valid product for all items.');
       return;
     }
 
     if (formattedItems.some(i => !i.quantity || i.quantity <= 0)) {
-      setFormError('Quantity must be at least 1 for all line items.');
+      setFormError('Quantity must be greater than zero.');
       return;
     }
 
@@ -97,7 +96,7 @@ export default function EnquiriesPage() {
       resetForm();
       fetchData();
     } catch (err) {
-      setFormError(err.response?.data?.error || 'Failed to create enquiry.');
+      setFormError(err.response?.data?.error || 'Failed to record enquiry.');
     } finally {
       setSubmitting(false);
     }
@@ -111,18 +110,18 @@ export default function EnquiriesPage() {
     setFormError('');
   };
 
-  const getStatusBadgeClass = (status) => {
+  const getStatusBorderColor = (status) => {
     switch (status) {
       case 'NEW':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
+        return 'border-l-[#D99A3D] text-[#D99A3D]';
       case 'QUOTED':
-        return 'bg-purple-50 text-purple-700 border-purple-200';
+        return 'border-l-[#5B84A8] text-[#5B84A8]';
       case 'WON':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        return 'border-l-[#5A9E7A] text-[#5A9E7A]';
       case 'LOST':
-        return 'bg-rose-50 text-rose-700 border-rose-200';
+        return 'border-l-[#B8543F] text-[#B8543F]';
       default:
-        return 'bg-slate-50 text-slate-700 border-slate-200';
+        return 'border-l-[#8F9799] text-[#8F9799]';
     }
   };
 
@@ -131,102 +130,92 @@ export default function EnquiriesPage() {
   const quotedCount = enquiries.filter(e => e.status === 'QUOTED').length;
 
   return (
-    <div class="space-y-6">
-      {/* ERP Stepper Progress */}
+    <div class="space-y-5">
+      {/* Routing Strip Tracker */}
       <WorkflowTracker currentStep={1} />
 
-      {/* KPI Overview Cards */}
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Enquiries</span>
-          <div class="text-2xl font-black text-slate-900 mt-1">{totalEnquiriesCount}</div>
-          <span class="text-xs text-slate-500 font-medium">Logged in supply system</span>
+      {/* Hairline Stat Strip (Rule 4) */}
+      <div class="bg-[#23282C] border border-[#3A4145] grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[#3A4145]">
+        <div class="p-4">
+          <div class="font-mono text-2xl font-semibold text-[#E9E6DF]">{totalEnquiriesCount}</div>
+          <div class="text-xs text-[#8F9799] mt-0.5">Total enquiries</div>
         </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-blue-500">New Pending Enquiries</span>
-          <div class="text-2xl font-black text-blue-600 mt-1">{newEnquiriesCount}</div>
-          <span class="text-xs text-slate-500 font-medium">Awaiting price quotation</span>
+        <div class="p-4">
+          <div class="font-mono text-2xl font-semibold text-[#D99A3D]">{newEnquiriesCount}</div>
+          <div class="text-xs text-[#8F9799] mt-0.5">New pending enquiries</div>
         </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-purple-500">Quoted Enquiries</span>
-          <div class="text-2xl font-black text-purple-600 mt-1">{quotedCount}</div>
-          <span class="text-xs text-slate-500 font-medium">Formally price-quoted</span>
+        <div class="p-4">
+          <div class="font-mono text-2xl font-semibold text-[#5B84A8]">{quotedCount}</div>
+          <div class="text-xs text-[#8F9799] mt-0.5">Quoted enquiries</div>
         </div>
       </div>
 
-      {/* Page Action Header */}
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+      {/* Section Header & Primary Action */}
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#3A4145] pb-4">
         <div>
-          <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <ClipboardList class="w-6 h-6 text-blue-600" />
-            Customer Enquiries (Step 1)
-          </h1>
-          <p class="text-xs text-slate-500 mt-0.5">
-            Log incoming product inquiries from clients before generating formal pricing quotations
+          <h1 class="text-lg font-semibold text-[#E9E6DF]">Customer enquiries</h1>
+          <p class="text-xs text-[#8F9799] mt-0.5">
+            Initial product requirements logged by sales representatives
           </p>
         </div>
         <button
           onClick={() => { resetForm(); setIsCreateOpen(true); }}
-          class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md transition-all hover:shadow-blue-500/20"
+          class="bg-[#D99A3D] hover:bg-[#c48933] text-[#1B1F22] font-semibold text-xs px-3.5 py-2 rounded-[4px] transition-colors self-start sm:self-auto"
         >
-          <Plus class="w-4 h-4" />
-          Create New Customer Enquiry
+          Create enquiry
         </button>
       </div>
 
-      {/* Main Table Card */}
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      {/* Table (Rule 8) */}
+      <div class="bg-[#23282C] border border-[#3A4145]">
         {loading ? (
-          <div class="p-12 text-center text-slate-500">Loading customer enquiries...</div>
+          <div class="p-8 text-center text-xs font-mono text-[#8F9799]">Querying database records...</div>
         ) : enquiries.length === 0 ? (
-          <div class="p-12 text-center text-slate-500">No enquiries found. Click above to create your first enquiry.</div>
+          <div class="p-8 text-center text-xs text-[#8F9799]">No enquiries logged for this filter.</div>
         ) : (
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-600">
-              <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-[#1B1F22] border-b border-[#3A4145] text-[#8F9799] font-mono text-[11px] uppercase">
                 <tr>
-                  <th class="px-6 py-3.5">Enquiry ID</th>
-                  <th class="px-6 py-3.5">Customer & City</th>
-                  <th class="px-6 py-3.5">Enquiry Date</th>
-                  <th class="px-6 py-3.5">Required Date</th>
-                  <th class="px-6 py-3.5">Status</th>
-                  <th class="px-6 py-3.5">Logged By</th>
-                  <th class="px-6 py-3.5 text-right">Actions</th>
+                  <th class="px-4 py-3">Enquiry code</th>
+                  <th class="px-4 py-3">Customer</th>
+                  <th class="px-4 py-3">Enquiry date</th>
+                  <th class="px-4 py-3">Required date</th>
+                  <th class="px-4 py-3">Status</th>
+                  <th class="px-4 py-3">Created by</th>
+                  <th class="px-4 py-3 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100">
+              <tbody class="divide-y divide-[#3A4145]">
                 {enquiries.map((enq) => (
-                  <tr key={enq.id} class="hover:bg-slate-50/80 transition-colors">
-                    <td class="px-6 py-4 font-bold text-blue-600 font-mono text-xs">
+                  <tr key={enq.id} class="hover:bg-[#2A3034] transition-colors">
+                    <td class="px-4 py-3 font-mono font-semibold text-[#5B84A8]">
                       {enq.enquiry_number}
                     </td>
-                    <td class="px-6 py-4">
-                      <div class="font-bold text-slate-900 text-xs">{enq.customer?.company_name}</div>
-                      <div class="text-[11px] text-slate-400 font-medium">{enq.customer?.city} • {enq.customer?.contact_person}</div>
+                    <td class="px-4 py-3 text-[#E9E6DF]">
+                      <div class="font-medium">{enq.customer?.company_name}</div>
+                      <div class="text-[11px] text-[#8F9799] font-mono">{enq.customer?.city}</div>
                     </td>
-                    <td class="px-6 py-4 text-xs text-slate-500 font-medium">
-                      {new Date(enq.enquiry_date).toLocaleDateString()}
+                    <td class="px-4 py-3 font-mono text-[#8F9799]">
+                      {new Date(enq.enquiry_date).toISOString().split('T')[0]}
                     </td>
-                    <td class="px-6 py-4 text-xs text-slate-500 font-medium">
-                      {new Date(enq.required_date).toLocaleDateString()}
+                    <td class="px-4 py-3 font-mono text-[#8F9799]">
+                      {new Date(enq.required_date).toISOString().split('T')[0]}
                     </td>
-                    <td class="px-6 py-4">
-                      <span class={`inline-flex items-center px-2.5 py-1 text-[11px] font-bold rounded-lg border ${getStatusBadgeClass(enq.status)}`}>
+                    <td class="px-4 py-3">
+                      <span class={`inline-block px-2 py-0.5 text-[11px] font-mono border-l-2 bg-[#1B1F22] rounded-[2px] ${getStatusBorderColor(enq.status)}`}>
                         {enq.status}
                       </span>
                     </td>
-                    <td class="px-6 py-4 text-xs text-slate-500 font-medium">
+                    <td class="px-4 py-3 text-[#8F9799]">
                       {enq.user?.name}
                     </td>
-                    <td class="px-6 py-4 text-right">
+                    <td class="px-4 py-3 text-right">
                       <button
                         onClick={() => setSelectedEnquiry(enq)}
-                        class="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 rounded-lg transition-colors inline-flex items-center gap-1.5 text-xs font-bold"
+                        class="px-2.5 py-1 text-xs border border-[#3A4145] text-[#E9E6DF] hover:bg-[#2A3034] transition-colors rounded-[4px]"
                       >
-                        <Eye class="w-3.5 h-3.5" />
-                        Inspect Items
+                        Inspect
                       </button>
                     </td>
                   </tr>
@@ -237,79 +226,77 @@ export default function EnquiriesPage() {
         )}
       </div>
 
-      {/* Detail View Modal */}
+      {/* Detail Modal */}
       {selectedEnquiry && (
-        <div class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 p-6 space-y-5">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="fixed inset-0 z-50 bg-[#1B1F22]/80 flex items-center justify-center p-4">
+          <div class="bg-[#23282C] border border-[#3A4145] max-w-2xl w-full p-5 space-y-4 rounded-[4px]">
+            <div class="flex items-center justify-between pb-3 border-b border-[#3A4145]">
               <div>
-                <span class="text-[11px] font-bold text-blue-600 font-mono uppercase tracking-wider">Step 1 Details</span>
-                <h3 class="text-lg font-extrabold text-slate-900">Enquiry {selectedEnquiry.enquiry_number}</h3>
+                <span class="text-[11px] font-mono text-[#8F9799] uppercase">Enquiry manifest</span>
+                <h2 class="text-base font-semibold text-[#E9E6DF]">{selectedEnquiry.enquiry_number}</h2>
               </div>
               <button
                 onClick={() => setSelectedEnquiry(null)}
-                class="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+                class="px-2 py-1 text-xs text-[#8F9799] border border-[#3A4145] hover:text-[#E9E6DF]"
               >
-                <X class="w-5 h-5" />
+                Close
               </button>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+            <div class="grid grid-cols-2 gap-3 text-xs bg-[#1B1F22] border border-[#3A4145] p-3">
               <div>
-                <span class="block text-[10px] text-slate-400 font-bold uppercase">Customer</span>
-                <span class="font-bold text-slate-900 text-sm">{selectedEnquiry.customer?.company_name}</span>
+                <span class="block text-[10px] text-[#8F9799] uppercase font-mono">Customer</span>
+                <span class="font-medium text-[#E9E6DF]">{selectedEnquiry.customer?.company_name}</span>
               </div>
               <div>
-                <span class="block text-[10px] text-slate-400 font-bold uppercase">Contact Info</span>
-                <span class="font-medium text-slate-800">{selectedEnquiry.customer?.contact_person} ({selectedEnquiry.customer?.mobile})</span>
+                <span class="block text-[10px] text-[#8F9799] uppercase font-mono">Contact</span>
+                <span class="font-medium text-[#8F9799]">{selectedEnquiry.customer?.contact_person} ({selectedEnquiry.customer?.mobile})</span>
               </div>
               <div>
-                <span class="block text-[10px] text-slate-400 font-bold uppercase">Target Date</span>
-                <span class="font-semibold text-slate-800">{new Date(selectedEnquiry.required_date).toLocaleDateString()}</span>
+                <span class="block text-[10px] text-[#8F9799] uppercase font-mono">Required date</span>
+                <span class="font-mono text-[#E9E6DF]">{new Date(selectedEnquiry.required_date).toISOString().split('T')[0]}</span>
               </div>
               <div>
-                <span class="block text-[10px] text-slate-400 font-bold uppercase">Pipeline Status</span>
-                <span class={`inline-block mt-0.5 px-2.5 py-0.5 text-xs font-bold rounded-md border ${getStatusBadgeClass(selectedEnquiry.status)}`}>
+                <span class="block text-[10px] text-[#8F9799] uppercase font-mono">Status</span>
+                <span class={`inline-block mt-0.5 px-2 py-0.5 text-[11px] font-mono border-l-2 bg-[#23282C] ${getStatusBorderColor(selectedEnquiry.status)}`}>
                   {selectedEnquiry.status}
                 </span>
               </div>
             </div>
 
             {selectedEnquiry.notes && (
-              <div>
-                <span class="block text-xs font-bold text-slate-700 mb-1">Specific Client Instructions</span>
-                <p class="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200/80 font-medium">{selectedEnquiry.notes}</p>
+              <div class="text-xs bg-[#1B1F22] border border-[#3A4145] p-3 text-[#8F9799]">
+                <span class="block text-[10px] font-mono uppercase text-[#E9E6DF] mb-1">Notes</span>
+                {selectedEnquiry.notes}
               </div>
             )}
 
             <div>
-              <h4 class="text-xs font-bold text-slate-900 mb-2 uppercase tracking-wider">Requested Product Items</h4>
-              <div class="border border-slate-200 rounded-xl overflow-hidden">
-                <table class="w-full text-left text-xs">
-                  <thead class="bg-slate-50 text-[10px] font-bold text-slate-500 uppercase border-b border-slate-200">
-                    <tr>
-                      <th class="px-4 py-2.5">Product Code</th>
-                      <th class="px-4 py-2.5">Description</th>
-                      <th class="px-4 py-2.5 text-right">Requested Qty</th>
+              <span class="block text-xs font-semibold text-[#E9E6DF] mb-2">Line items manifest</span>
+              <table class="w-full text-left text-xs border border-[#3A4145]">
+                <thead class="bg-[#1B1F22] border-b border-[#3A4145] text-[#8F9799] font-mono text-[11px] uppercase">
+                  <tr>
+                    <th class="p-2">Code</th>
+                    <th class="p-2">Product name</th>
+                    <th class="p-2 text-right">Quantity</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#3A4145]">
+                  {selectedEnquiry.items?.map((item) => (
+                    <tr key={item.id}>
+                      <td class="p-2 font-mono text-[#5B84A8]">{item.product?.product_code}</td>
+                      <td class="p-2 text-[#E9E6DF]">{item.product?.product_name}</td>
+                      <td class="p-2 text-right font-mono font-semibold text-[#E9E6DF]">{item.quantity} {item.product?.unit}</td>
                     </tr>
-                  </thead>
-                  <tbody class="divide-y divide-slate-100">
-                    {selectedEnquiry.items?.map((item) => (
-                      <tr key={item.id}>
-                        <td class="px-4 py-3 font-mono font-bold text-blue-600">{item.product?.product_code}</td>
-                        <td class="px-4 py-3 font-semibold text-slate-800">{item.product?.product_name}</td>
-                        <td class="px-4 py-3 text-right font-black text-slate-900">{item.quantity} {item.product?.unit}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
 
-            <div class="pt-3 flex justify-end border-t border-slate-100">
+            <div class="pt-2 flex justify-end">
               <button
                 onClick={() => setSelectedEnquiry(null)}
-                class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors"
+                class="px-3 py-1.5 border border-[#3A4145] text-xs text-[#E9E6DF] hover:bg-[#2A3034] rounded-[4px]"
               >
                 Close
               </button>
@@ -320,38 +307,35 @@ export default function EnquiriesPage() {
 
       {/* Create Modal */}
       {isCreateOpen && (
-        <div class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 p-6 space-y-5">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div>
-                <span class="text-[11px] font-bold text-blue-600 uppercase tracking-wider">New Record Entry</span>
-                <h3 class="text-lg font-extrabold text-slate-900">Create Customer Enquiry</h3>
-              </div>
+        <div class="fixed inset-0 z-50 bg-[#1B1F22]/80 flex items-center justify-center p-4">
+          <div class="bg-[#23282C] border border-[#3A4145] max-w-2xl w-full p-5 space-y-4 rounded-[4px]">
+            <div class="flex items-center justify-between pb-3 border-b border-[#3A4145]">
+              <h2 class="text-base font-semibold text-[#E9E6DF]">Create customer enquiry</h2>
               <button
                 onClick={() => setIsCreateOpen(false)}
-                class="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+                class="px-2 py-1 text-xs text-[#8F9799] border border-[#3A4145]"
               >
-                <X class="w-5 h-5" />
+                Cancel
               </button>
             </div>
 
             {formError && (
-              <div class="bg-red-50 text-red-700 p-3 rounded-xl text-xs font-bold border border-red-200">
+              <div class="bg-[#1B1F22] border-l-2 border-[#B8543F] p-3 text-xs font-mono text-[#B8543F]">
                 {formError}
               </div>
             )}
 
-            <form onSubmit={handleCreateSubmit} class="space-y-4 text-xs">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form onSubmit={handleCreateSubmit} class="space-y-3 text-xs">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label class="block font-bold text-slate-700 mb-1">Select Customer Account *</label>
+                  <label class="block text-[#8F9799] mb-1">Customer account</label>
                   <select
                     required
                     value={customerId}
                     onChange={(e) => setCustomerId(e.target.value)}
-                    class="w-full p-2.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 font-medium"
+                    class="w-full bg-[#1B1F22] border border-[#3A4145] p-2 text-xs text-[#E9E6DF] rounded-[4px]"
                   >
-                    <option value="">-- Choose Customer --</option>
+                    <option value="">Select customer</option>
                     {customers.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.company_name} ({c.city})
@@ -361,52 +345,52 @@ export default function EnquiriesPage() {
                 </div>
 
                 <div>
-                  <label class="block font-bold text-slate-700 mb-1">Target Delivery Date *</label>
+                  <label class="block text-[#8F9799] mb-1">Required date</label>
                   <input
                     type="date"
                     required
                     value={requiredDate}
                     onChange={(e) => setRequiredDate(e.target.value)}
-                    class="w-full p-2.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 font-medium"
+                    class="w-full bg-[#1B1F22] border border-[#3A4145] p-2 text-xs font-mono text-[#E9E6DF] rounded-[4px]"
                   />
                 </div>
               </div>
 
               <div>
-                <label class="block font-bold text-slate-700 mb-1">Specific Technical / Packaging Instructions</label>
+                <label class="block text-[#8F9799] mb-1">Notes</label>
                 <textarea
                   rows="2"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Enter notes..."
-                  class="w-full p-2.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 font-medium"
+                  placeholder="Enter any packaging or technical requirements..."
+                  class="w-full bg-[#1B1F22] border border-[#3A4145] p-2 text-xs text-[#E9E6DF] rounded-[4px]"
                 />
               </div>
 
-              {/* Dynamic Product Line Items */}
+              {/* Line Items */}
               <div>
                 <div class="flex items-center justify-between mb-2">
-                  <label class="block font-bold text-slate-700">Required Products & Quantities *</label>
+                  <span class="block text-[#E9E6DF] font-semibold">Line items</span>
                   <button
                     type="button"
                     onClick={handleAddItemRow}
-                    class="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                    class="text-xs text-[#5B84A8] hover:underline font-mono"
                   >
-                    <Plus class="w-3.5 h-3.5" /> Add Product Row
+                    + Add line item
                   </button>
                 </div>
 
-                <div class="space-y-2.5">
+                <div class="space-y-2">
                   {items.map((item, index) => (
-                    <div key={index} class="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <div key={index} class="flex items-center gap-2 bg-[#1B1F22] border border-[#3A4145] p-2">
                       <div class="flex-1">
                         <select
                           required
                           value={item.product_id}
                           onChange={(e) => handleItemChange(index, 'product_id', e.target.value)}
-                          class="w-full p-2 border border-slate-300 rounded-lg text-xs bg-white focus:ring-2 focus:ring-blue-500 font-medium"
+                          class="w-full bg-[#23282C] border border-[#3A4145] p-1.5 text-xs text-[#E9E6DF] rounded-[4px]"
                         >
-                          <option value="">-- Choose Product --</option>
+                          <option value="">Select product</option>
                           {products.map((p) => (
                             <option key={p.id} value={p.id}>
                               {p.product_code} - {p.product_name}
@@ -423,7 +407,7 @@ export default function EnquiriesPage() {
                           value={item.quantity}
                           onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
                           placeholder="Qty"
-                          class="w-full p-2 border border-slate-300 rounded-lg text-xs bg-white text-center font-bold focus:ring-2 focus:ring-blue-500"
+                          class="w-full bg-[#23282C] border border-[#3A4145] p-1.5 text-xs font-mono text-[#E9E6DF] text-center rounded-[4px]"
                         />
                       </div>
 
@@ -431,29 +415,29 @@ export default function EnquiriesPage() {
                         type="button"
                         onClick={() => handleRemoveItemRow(index)}
                         disabled={items.length === 1}
-                        class="p-1.5 text-slate-400 hover:text-red-600 disabled:opacity-30 rounded-lg transition-colors"
+                        class="text-[#B8543F] hover:underline text-xs disabled:opacity-30 px-1 font-mono"
                       >
-                        <Trash2 class="w-4 h-4" />
+                        Remove
                       </button>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+              <div class="pt-3 flex justify-end gap-2 border-t border-[#3A4145]">
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors"
+                  class="px-3 py-1.5 border border-[#3A4145] text-xs text-[#E9E6DF] hover:bg-[#2A3034] rounded-[4px]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md transition-all disabled:opacity-50"
+                  class="bg-[#D99A3D] text-[#1B1F22] font-semibold text-xs px-4 py-1.5 rounded-[4px] hover:bg-[#c48933] disabled:opacity-50"
                 >
-                  {submitting ? 'Submitting...' : 'Save Enquiry'}
+                  {submitting ? 'Recording...' : 'Record enquiry'}
                 </button>
               </div>
             </form>
