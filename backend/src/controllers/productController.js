@@ -52,7 +52,38 @@ const getInventory = async (req, res, next) => {
   }
 };
 
+const restockInventory = async (req, res, next) => {
+  try {
+    const { product_id, quantity } = req.body;
+    const pId = parseInt(product_id, 10);
+    const qty = parseInt(quantity, 10);
+
+    if (isNaN(pId) || isNaN(qty) || qty <= 0) {
+      return res.status(400).json({ error: 'Valid product ID and positive restock quantity are required.' });
+    }
+
+    const updated = await prisma.inventory.update({
+      where: { product_id: pId },
+      data: {
+        physical_quantity: { increment: qty },
+      },
+      include: { product: true },
+    });
+
+    res.json({
+      message: `Successfully restocked ${qty} units of ${updated.product.product_name}.`,
+      inventory: {
+        ...updated,
+        available_quantity: updated.physical_quantity - updated.reserved_quantity,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProducts,
   getInventory,
+  restockInventory,
 };

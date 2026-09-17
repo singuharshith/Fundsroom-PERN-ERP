@@ -339,4 +339,30 @@ describe('PERN ERP Automated Test Suite', () => {
     expect([5, 8]).toContain(finalInv.reserved_quantity);
     expect(finalInv.reserved_quantity).toBeLessThanOrEqual(finalInv.physical_quantity);
   });
+
+  /**
+   * TEST 7: Admin Inventory Restocking
+   */
+  test('7. ADMIN can restock inventory physical quantity', async () => {
+    const invBefore = await prisma.inventory.findUnique({
+      where: { product_id: testProduct1.id },
+    });
+
+    const restockRes = await request(app)
+      .post('/api/inventory/restock')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ product_id: testProduct1.id, quantity: 50 });
+
+    expect(restockRes.status).toBe(200);
+    expect(restockRes.body.inventory.physical_quantity).toBe(invBefore.physical_quantity + 50);
+
+    // Sales user hitting restock -> 403 Forbidden
+    const unauthRestock = await request(app)
+      .post('/api/inventory/restock')
+      .set('Authorization', `Bearer ${salesToken}`)
+      .send({ product_id: testProduct1.id, quantity: 50 });
+
+    expect(unauthRestock.status).toBe(403);
+  });
 });
+
