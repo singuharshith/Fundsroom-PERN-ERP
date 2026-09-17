@@ -18,7 +18,7 @@ export default function InventoryPage() {
       setInventory(res.data.inventory);
     } catch (err) {
       console.error('Failed to load inventory:', err);
-    } font-medium
+    } finally {
       setLoading(false);
     }
   };
