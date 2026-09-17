@@ -111,18 +111,18 @@ export default function EnquiriesPage() {
     setFormError('');
   };
 
-  const getStatusBadgeClass = (status) => {
+  const getStatusTag = (status) => {
     switch (status) {
       case 'NEW':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
+        return <span className="status-tag status-tag-warning">New</span>;
       case 'QUOTED':
-        return 'bg-purple-50 text-purple-700 border-purple-200';
+        return <span className="status-tag status-tag-warning">Quoted</span>;
       case 'WON':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        return <span className="status-tag status-tag-success">Won</span>;
       case 'LOST':
-        return 'bg-rose-50 text-rose-700 border-rose-200';
+        return <span className="status-tag status-tag-danger">Lost</span>;
       default:
-        return 'bg-slate-100 text-slate-700 border-slate-200';
+        return <span className="status-tag status-tag-warning">{status}</span>;
     }
   };
 
@@ -131,102 +131,90 @@ export default function EnquiriesPage() {
   const quotedCount = enquiries.filter(e => e.status === 'QUOTED').length;
 
   return (
-    <div class="space-y-6">
-      {/* ERP Stepper Progress */}
-      <WorkflowTracker currentStep={1} />
+    <div className="space-y-5 font-sans">
+      {/* Title & Plain Text Breadcrumb */}
+      <div>
+        <h1 className="text-xl font-semibold text-[#1F2937]">Enquiries</h1>
+        <WorkflowTracker currentStep={1} />
+      </div>
 
-      {/* KPI Overview Cards */}
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Enquiries</span>
-          <div class="text-2xl font-black text-slate-900 mt-1">{totalEnquiriesCount}</div>
-          <span class="text-xs text-slate-500 font-medium">Logged in supply system</span>
+      {/* Stat Row: Plain numbers separated by 1px solid #DADFE3 vertical dividers */}
+      <div className="bg-white border border-[#DADFE3] rounded-[4px] grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[#DADFE3]">
+        <div className="p-4">
+          <div className="font-mono text-2xl font-semibold text-[#1F2937]">{totalEnquiriesCount}</div>
+          <div className="text-xs text-[#667085] mt-0.5">Total enquiries</div>
         </div>
-
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-blue-600">New Pending Enquiries</span>
-          <div class="text-2xl font-black text-blue-600 mt-1">{newEnquiriesCount}</div>
-          <span class="text-xs text-slate-500 font-medium">Awaiting price quotation</span>
+        <div className="p-4">
+          <div className="font-mono text-2xl font-semibold text-[#1F2937]">{newEnquiriesCount}</div>
+          <div className="text-xs text-[#667085] mt-0.5">New pending enquiries</div>
         </div>
-
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-purple-600">Quoted Enquiries</span>
-          <div class="text-2xl font-black text-purple-600 mt-1">{quotedCount}</div>
-          <span class="text-xs text-slate-500 font-medium">Formally price-quoted</span>
+        <div className="p-4">
+          <div className="font-mono text-2xl font-semibold text-[#1F2937]">{quotedCount}</div>
+          <div className="text-xs text-[#667085] mt-0.5">Quoted enquiries</div>
         </div>
       </div>
 
-      {/* Section Header & Action */}
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-        <div>
-          <h1 class="text-xl font-black text-slate-900 flex items-center gap-2">
-            <ClipboardList class="w-6 h-6 text-blue-600" />
-            Customer Enquiries (Step 1)
-          </h1>
-          <p class="text-xs text-slate-500 font-medium mt-0.5">
-            Log incoming product inquiries from clients before generating formal pricing quotations
-          </p>
-        </div>
+      {/* Header & Primary Action */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+        <p className="text-xs text-[#667085]">
+          Log incoming product requirements from clients before generating formal price quotations.
+        </p>
         <button
           onClick={() => { resetForm(); setIsCreateOpen(true); }}
-          class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all"
+          className="btn-primary text-xs self-start sm:self-auto"
         >
-          <Plus class="w-4 h-4" />
-          Create New Enquiry
+          Create enquiry
         </button>
       </div>
 
-      {/* Main Table Card */}
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      {/* Main Table */}
+      <div className="bg-white border border-[#DADFE3] rounded-[4px] overflow-hidden">
         {loading ? (
-          <div class="p-12 text-center text-slate-500 text-xs font-mono">Querying database records...</div>
+          <div className="p-8 text-center text-xs font-mono text-[#667085]">Querying database records...</div>
         ) : enquiries.length === 0 ? (
-          <div class="p-12 text-center text-slate-500 text-xs font-medium">No enquiries logged. Click above to create your first enquiry.</div>
+          <div className="p-8 text-center text-xs text-[#667085]">No enquiries recorded. Click 'Create enquiry' to add one.</div>
         ) : (
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-[#F6F7F8] border-b border-[#DADFE3] text-[#667085] font-semibold text-xs">
                 <tr>
-                  <th class="px-6 py-3.5">Enquiry ID</th>
-                  <th class="px-6 py-3.5">Customer & City</th>
-                  <th class="px-6 py-3.5">Enquiry Date</th>
-                  <th class="px-6 py-3.5">Required Date</th>
-                  <th class="px-6 py-3.5">Status</th>
-                  <th class="px-6 py-3.5">Logged By</th>
-                  <th class="px-6 py-3.5 text-right">Actions</th>
+                  <th className="px-4 py-3">Enquiry code</th>
+                  <th className="px-4 py-3">Customer & city</th>
+                  <th className="px-4 py-3">Enquiry date</th>
+                  <th className="px-4 py-3">Required date</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Logged by</th>
+                  <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100">
+              <tbody className="divide-y divide-[#DADFE3]">
                 {enquiries.map((enq) => (
-                  <tr key={enq.id} class="hover:bg-slate-50 transition-colors">
-                    <td class="px-6 py-4 font-bold text-blue-600 font-mono text-xs">
+                  <tr key={enq.id} className="hover:bg-[#F6F7F8] transition-colors">
+                    <td className="px-4 py-3 font-mono font-semibold text-[#1F5C73]">
                       {enq.enquiry_number}
                     </td>
-                    <td class="px-6 py-4">
-                      <div class="font-bold text-slate-900 text-xs">{enq.customer?.company_name}</div>
-                      <div class="text-[11px] text-slate-400 font-medium">{enq.customer?.city} • {enq.customer?.contact_person}</div>
+                    <td className="px-4 py-3 text-[#1F2937]">
+                      <div className="font-semibold text-xs">{enq.customer?.company_name}</div>
+                      <div className="text-[11px] text-[#667085]">{enq.customer?.city} • {enq.customer?.contact_person}</div>
                     </td>
-                    <td class="px-6 py-4 text-xs font-mono text-slate-500">
-                      {new Date(enq.enquiry_date).toLocaleDateString()}
+                    <td className="px-4 py-3 font-mono text-[#667085]">
+                      {new Date(enq.enquiry_date).toISOString().split('T')[0]}
                     </td>
-                    <td class="px-6 py-4 text-xs font-mono text-slate-500">
-                      {new Date(enq.required_date).toLocaleDateString()}
+                    <td className="px-4 py-3 font-mono text-[#667085]">
+                      {new Date(enq.required_date).toISOString().split('T')[0]}
                     </td>
-                    <td class="px-6 py-4">
-                      <span class={`inline-flex items-center px-2.5 py-1 text-[11px] font-bold rounded-lg border ${getStatusBadgeClass(enq.status)}`}>
-                        {enq.status}
-                      </span>
+                    <td className="px-4 py-3">
+                      {getStatusTag(enq.status)}
                     </td>
-                    <td class="px-6 py-4 text-xs text-slate-600 font-medium">
+                    <td className="px-4 py-3 text-[#1F2937]">
                       {enq.user?.name}
                     </td>
-                    <td class="px-6 py-4 text-right">
+                    <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => setSelectedEnquiry(enq)}
-                        class="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 rounded-lg transition-colors inline-flex items-center gap-1.5 text-xs font-bold"
+                        className="btn-outline text-xs px-2.5 py-1"
                       >
-                        <Eye class="w-3.5 h-3.5" />
-                        Inspect Items
+                        View Items
                       </button>
                     </td>
                   </tr>
@@ -239,66 +227,64 @@ export default function EnquiriesPage() {
 
       {/* Detail View Modal */}
       {selectedEnquiry && (
-        <div class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 p-6 space-y-5">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4">
+          <div className="bg-white border border-[#DADFE3] rounded-[4px] max-w-2xl w-full p-5 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#DADFE3]">
               <div>
-                <span class="text-[11px] font-bold text-blue-600 font-mono uppercase tracking-wider">Step 1 Record Details</span>
-                <h3 class="text-lg font-black text-slate-900">Enquiry {selectedEnquiry.enquiry_number}</h3>
+                <span className="text-[11px] font-mono text-[#667085]">ENQUIRY DETAILS</span>
+                <h3 className="text-base font-semibold text-[#1F2937]">{selectedEnquiry.enquiry_number}</h3>
               </div>
               <button
                 onClick={() => setSelectedEnquiry(null)}
-                class="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+                className="btn-outline text-xs px-2.5 py-1"
               >
-                <X class="w-5 h-5" />
+                Close
               </button>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+            <div className="grid grid-cols-2 gap-4 text-xs bg-[#F6F7F8] p-3 border border-[#DADFE3] rounded-[4px]">
               <div>
-                <span class="block text-[10px] text-slate-400 font-bold uppercase">Customer</span>
-                <span class="font-bold text-slate-900 text-sm">{selectedEnquiry.customer?.company_name}</span>
+                <span className="block text-[11px] text-[#667085]">Customer</span>
+                <span className="font-semibold text-[#1F2937]">{selectedEnquiry.customer?.company_name}</span>
               </div>
               <div>
-                <span class="block text-[10px] text-slate-400 font-bold uppercase">Contact Person</span>
-                <span class="font-medium text-slate-700">{selectedEnquiry.customer?.contact_person} ({selectedEnquiry.customer?.mobile})</span>
+                <span className="block text-[11px] text-[#667085]">Contact person</span>
+                <span className="text-[#1F2937]">{selectedEnquiry.customer?.contact_person} ({selectedEnquiry.customer?.mobile})</span>
               </div>
               <div>
-                <span class="block text-[10px] text-slate-400 font-bold uppercase">Required Date</span>
-                <span class="font-mono text-slate-800 font-semibold">{new Date(selectedEnquiry.required_date).toLocaleDateString()}</span>
+                <span className="block text-[11px] text-[#667085]">Required date</span>
+                <span className="font-mono text-[#1F2937]">{new Date(selectedEnquiry.required_date).toISOString().split('T')[0]}</span>
               </div>
               <div>
-                <span class="block text-[10px] text-slate-400 font-bold uppercase">Pipeline Status</span>
-                <span class={`inline-block mt-0.5 px-2.5 py-0.5 text-xs font-bold rounded-lg border ${getStatusBadgeClass(selectedEnquiry.status)}`}>
-                  {selectedEnquiry.status}
-                </span>
+                <span className="block text-[11px] text-[#667085]">Status</span>
+                <span className="mt-0.5 inline-block">{getStatusTag(selectedEnquiry.status)}</span>
               </div>
             </div>
 
             {selectedEnquiry.notes && (
               <div>
-                <span class="block text-xs font-bold text-slate-700 mb-1">Notes / Instructions</span>
-                <p class="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 font-medium">{selectedEnquiry.notes}</p>
+                <span className="block text-xs font-semibold text-[#1F2937] mb-1">Notes / Instructions</span>
+                <p className="text-xs text-[#667085] bg-[#F6F7F8] p-3 border border-[#DADFE3] rounded-[4px]">{selectedEnquiry.notes}</p>
               </div>
             )}
 
             <div>
-              <h4 class="text-xs font-bold text-slate-900 mb-2 uppercase tracking-wider">Requested Product Items</h4>
-              <div class="border border-slate-200 rounded-xl overflow-hidden">
-                <table class="w-full text-left text-xs">
-                  <thead class="bg-slate-50 text-[10px] font-bold text-slate-500 uppercase border-b border-slate-200">
+              <h4 className="text-xs font-semibold text-[#1F2937] mb-2">Requested line items</h4>
+              <div className="border border-[#DADFE3] rounded-[4px] overflow-hidden">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#F6F7F8] text-xs text-[#667085] font-semibold border-b border-[#DADFE3]">
                     <tr>
-                      <th class="px-4 py-2.5">Product Code</th>
-                      <th class="px-4 py-2.5">Description</th>
-                      <th class="px-4 py-2.5 text-right">Quantity</th>
+                      <th className="px-3 py-2">Product code</th>
+                      <th className="px-3 py-2">Description</th>
+                      <th className="px-3 py-2 text-right">Quantity</th>
                     </tr>
                   </thead>
-                  <tbody class="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-[#DADFE3]">
                     {selectedEnquiry.items?.map((item) => (
                       <tr key={item.id}>
-                        <td class="px-4 py-3 font-mono font-bold text-blue-600">{item.product?.product_code}</td>
-                        <td class="px-4 py-3 font-semibold text-slate-800">{item.product?.product_name}</td>
-                        <td class="px-4 py-3 text-right font-black text-slate-900 font-mono">{item.quantity} {item.product?.unit}</td>
+                        <td className="px-3 py-2.5 font-mono font-semibold text-[#1F5C73]">{item.product?.product_code}</td>
+                        <td className="px-3 py-2.5 text-[#1F2937]">{item.product?.product_name}</td>
+                        <td className="px-3 py-2.5 text-right font-mono font-semibold text-[#1F2937]">{item.quantity} {item.product?.unit}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -306,10 +292,10 @@ export default function EnquiriesPage() {
               </div>
             </div>
 
-            <div class="pt-3 flex justify-end border-t border-slate-100">
+            <div className="pt-2 flex justify-end border-t border-[#DADFE3]">
               <button
                 onClick={() => setSelectedEnquiry(null)}
-                class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors"
+                className="btn-outline text-xs px-3 py-1.5"
               >
                 Close
               </button>
@@ -320,38 +306,35 @@ export default function EnquiriesPage() {
 
       {/* Create Modal */}
       {isCreateOpen && (
-        <div class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 p-6 space-y-5">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div>
-                <span class="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Step 1 New Record</span>
-                <h3 class="text-lg font-black text-slate-900">Create Customer Enquiry</h3>
-              </div>
+        <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4">
+          <div className="bg-white border border-[#DADFE3] rounded-[4px] max-w-2xl w-full p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#DADFE3]">
+              <h3 className="text-base font-semibold text-[#1F2937]">Create customer enquiry</h3>
               <button
                 onClick={() => setIsCreateOpen(false)}
-                class="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+                className="btn-outline text-xs px-2.5 py-1"
               >
-                <X class="w-5 h-5" />
+                Cancel
               </button>
             </div>
 
             {formError && (
-              <div class="bg-rose-50 text-rose-700 p-3 rounded-xl text-xs font-bold border border-rose-200">
+              <div className="bg-white border border-[#B23A32] p-3 rounded-[4px] text-xs font-medium text-[#B23A32]">
                 {formError}
               </div>
             )}
 
-            <form onSubmit={handleCreateSubmit} class="space-y-4 text-xs">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label class="block font-bold text-slate-700 mb-1">Select Customer Account *</label>
+                  <label className="block text-xs font-semibold text-[#1F2937] mb-1">Customer account</label>
                   <select
                     required
                     value={customerId}
                     onChange={(e) => setCustomerId(e.target.value)}
-                    class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                    className="w-full p-2 bg-white border border-[#DADFE3] text-xs text-[#1F2937] rounded-[4px] focus:outline-none focus:border-[#1F5C73]"
                   >
-                    <option value="">-- Choose Customer --</option>
+                    <option value="">Select customer</option>
                     {customers.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.company_name} ({c.city})
@@ -361,52 +344,52 @@ export default function EnquiriesPage() {
                 </div>
 
                 <div>
-                  <label class="block font-bold text-slate-700 mb-1">Target Delivery Date *</label>
+                  <label className="block text-xs font-semibold text-[#1F2937] mb-1">Target delivery date</label>
                   <input
                     type="date"
                     required
                     value={requiredDate}
                     onChange={(e) => setRequiredDate(e.target.value)}
-                    class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs font-mono font-semibold text-slate-900 focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                    className="w-full p-2 bg-white border border-[#DADFE3] text-xs font-mono text-[#1F2937] rounded-[4px] focus:outline-none focus:border-[#1F5C73]"
                   />
                 </div>
               </div>
 
               <div>
-                <label class="block font-bold text-slate-700 mb-1">Notes / Instructions</label>
+                <label className="block text-xs font-semibold text-[#1F2937] mb-1">Notes / Instructions</label>
                 <textarea
                   rows="2"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Enter packaging or technical instructions..."
-                  class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                  className="w-full p-2 bg-white border border-[#DADFE3] text-xs text-[#1F2937] rounded-[4px] focus:outline-none focus:border-[#1F5C73]"
                 />
               </div>
 
-              {/* Dynamic Product Line Items */}
+              {/* Dynamic Line Items */}
               <div>
-                <div class="flex items-center justify-between mb-2">
-                  <label class="block font-bold text-slate-700">Required Products & Quantities *</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-semibold text-[#1F2937]">Required products & quantities</label>
                   <button
                     type="button"
                     onClick={handleAddItemRow}
-                    class="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                    className="text-xs text-[#1F5C73] font-semibold hover:underline"
                   >
-                    <Plus class="w-3.5 h-3.5" /> Add Product Row
+                    + Add product row
                   </button>
                 </div>
 
-                <div class="space-y-2.5">
+                <div className="space-y-2">
                   {items.map((item, index) => (
-                    <div key={index} class="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                      <div class="flex-1">
+                    <div key={index} className="flex items-center gap-2 bg-[#F6F7F8] p-2 border border-[#DADFE3] rounded-[4px]">
+                      <div className="flex-1">
                         <select
                           required
                           value={item.product_id}
                           onChange={(e) => handleItemChange(index, 'product_id', e.target.value)}
-                          class="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:ring-2 focus:ring-blue-600"
+                          className="w-full p-1.5 bg-white border border-[#DADFE3] text-xs text-[#1F2937] rounded-[4px]"
                         >
-                          <option value="">-- Choose Product --</option>
+                          <option value="">Select product</option>
                           {products.map((p) => (
                             <option key={p.id} value={p.id}>
                               {p.product_code} - {p.product_name}
@@ -415,7 +398,7 @@ export default function EnquiriesPage() {
                         </select>
                       </div>
 
-                      <div class="w-24">
+                      <div className="w-24">
                         <input
                           type="number"
                           min="1"
@@ -423,7 +406,7 @@ export default function EnquiriesPage() {
                           value={item.quantity}
                           onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
                           placeholder="Qty"
-                          class="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs font-mono font-bold text-slate-900 text-center focus:ring-2 focus:ring-blue-600"
+                          className="w-full p-1.5 bg-white border border-[#DADFE3] text-xs font-mono text-[#1F2937] text-center rounded-[4px]"
                         />
                       </div>
 
@@ -431,29 +414,29 @@ export default function EnquiriesPage() {
                         type="button"
                         onClick={() => handleRemoveItemRow(index)}
                         disabled={items.length === 1}
-                        class="p-1.5 text-slate-400 hover:text-rose-600 disabled:opacity-30 rounded-lg transition-colors"
+                        className="text-[#B23A32] font-bold text-xs p-1 disabled:opacity-30"
                       >
-                        <Trash2 class="w-4 h-4" />
+                        ✕
                       </button>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#DADFE3]">
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors"
+                  className="btn-outline text-xs px-3 py-1.5"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all disabled:opacity-50"
+                  className="btn-primary text-xs px-4 py-1.5"
                 >
-                  {submitting ? 'Submitting...' : 'Save Enquiry'}
+                  {submitting ? 'Saving...' : 'Save enquiry'}
                 </button>
               </div>
             </form>

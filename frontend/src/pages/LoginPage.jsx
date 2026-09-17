@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Lock, Mail, ShieldAlert, ArrowRight, CheckCircle2, Package } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -32,107 +31,84 @@ export default function LoginPage() {
   };
 
   return (
-    <div class="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="flex justify-center mb-3">
-          <div class="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-            <Package class="w-6 h-6" />
-          </div>
-        </div>
-        <h1 class="text-2xl font-black text-slate-900 text-center tracking-tight">
-          FundsRoom ERP System
+    <div className="min-h-screen bg-white text-[#1F2937] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h1 className="text-xl font-semibold text-[#1F2937] text-center">
+          FundsRoom ERP
         </h1>
-        <p class="mt-1 text-center text-xs font-semibold text-slate-500">
-          Sign in to access your industrial supply chain & inventory ledger
+        <p className="mt-1 text-center text-xs text-[#667085]">
+          Sign in to access your enterprise ledger
         </p>
       </div>
 
-      <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="bg-white border border-slate-200 p-8 shadow-sm rounded-2xl">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-[#F6F7F8] border border-[#DADFE3] p-6 rounded-[4px]">
           {error && (
-            <div class="mb-5 bg-rose-50 border border-rose-200 p-3.5 rounded-xl flex items-start gap-2.5 text-xs text-rose-700 font-semibold">
-              <ShieldAlert class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
-              <span>{error}</span>
+            <div className="mb-4 bg-white border border-[#B23A32] p-3 rounded-[4px] text-xs font-medium text-[#B23A32]">
+              {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} class="space-y-4 text-xs">
+          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
             <div>
-              <label class="block font-bold text-slate-700 mb-1">
-                Email Address
+              <label className="block text-xs font-semibold text-[#1F2937] mb-1">
+                Email address
               </label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Mail class="w-4 h-4" />
-                </div>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@fundsroom.com"
-                  class="w-full bg-white border border-slate-300 pl-9 pr-3 py-2.5 text-xs font-mono font-semibold text-slate-900 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all placeholder-slate-400"
-                />
-              </div>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@fundsroom.com"
+                className="w-full bg-white border border-[#DADFE3] px-3 py-2 text-xs font-mono text-[#1F2937] rounded-[4px] focus:outline-none focus:border-[#1F5C73]"
+              />
             </div>
 
             <div>
-              <label class="block font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-[#1F2937] mb-1">
                 Password
               </label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Lock class="w-4 h-4" />
-                </div>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  class="w-full bg-white border border-slate-300 pl-9 pr-3 py-2.5 text-xs font-mono font-semibold text-slate-900 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all placeholder-slate-400"
-                />
-              </div>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full bg-white border border-[#DADFE3] px-3 py-2 text-xs font-mono text-[#1F2937] rounded-[4px] focus:outline-none focus:border-[#1F5C73]"
+              />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              class="w-full bg-blue-600 text-white font-bold text-xs py-3 rounded-xl hover:bg-blue-700 shadow-md shadow-blue-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="btn-primary w-full py-2"
             >
-              {loading ? 'Signing in...' : 'Sign In to ERP System'}
-              {!loading && <ArrowRight class="w-4 h-4" />}
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
 
           {/* Quick Demo Accounts */}
-          <div class="mt-8 pt-6 border-t border-slate-100">
-            <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center mb-3">
-              Click to Auto-Fill Test Account
+          <div className="mt-6 pt-5 border-t border-[#DADFE3]">
+            <span className="block text-[11px] font-semibold text-[#667085] text-center mb-2">
+              Auto-fill test credentials
             </span>
-            <div class="grid grid-cols-2 gap-3 text-xs">
+            <div className="grid grid-cols-2 gap-2 text-xs">
               <button
                 type="button"
                 onClick={() => handleQuickFill('admin@fundsroom.com', 'Admin@123')}
-                class="p-3 border border-amber-200 bg-amber-50/60 hover:bg-amber-100/60 rounded-xl text-left transition-all group"
+                className="btn-outline text-left py-2 px-3 block"
               >
-                <div class="flex items-center justify-between">
-                  <span class="font-extrabold text-amber-900 text-[11px]">ADMIN</span>
-                  <CheckCircle2 class="w-3.5 h-3.5 text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                <span class="block text-amber-700 font-mono text-[11px] mt-0.5 truncate">admin@fundsroom.com</span>
+                <span className="font-semibold text-[#1F2937] block text-[11px]">Admin User</span>
+                <span className="text-[#667085] font-mono text-[10px]">admin@fundsroom.com</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleQuickFill('sales@fundsroom.com', 'Sales@123')}
-                class="p-3 border border-blue-200 bg-blue-50/60 hover:bg-blue-100/60 rounded-xl text-left transition-all group"
+                className="btn-outline text-left py-2 px-3 block"
               >
-                <div class="flex items-center justify-between">
-                  <span class="font-extrabold text-blue-900 text-[11px]">SALES_USER</span>
-                  <CheckCircle2 class="w-3.5 h-3.5 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                <span class="block text-blue-700 font-mono text-[11px] mt-0.5 truncate">sales@fundsroom.com</span>
+                <span className="font-semibold text-[#1F2937] block text-[11px]">Sales User</span>
+                <span className="text-[#667085] font-mono text-[10px]">sales@fundsroom.com</span>
               </button>
             </div>
           </div>

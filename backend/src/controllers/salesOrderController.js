@@ -399,10 +399,60 @@ const getSalesOrderById = async (req, res, next) => {
   }
 };
 
+const cancelSalesOrder = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid Sales Order ID.' });
+    }
+
+    const salesOrder = await prisma.salesOrder.findUnique({
+      where: { id },
+      include: { items: true },
+    });
+
+    if (!salesOrder) {
+      return res.status(404).json({ error: 'Sales Order not found.' });
+    }
+
+    if (salesOrder.status === 'DISPATCHED' || salesOrder.status === 'CANCELLED') {
+      return res.status(400).json({
+        error: `Cannot cancel order with status '${salesOrder.status}'.`,
+      });
+    }
+
+    const updatedOrder = await prisma.$transaction(async (tx) => {
+      if (salesOrder.status === 'CONFIRMED') {
+        for (const item of salesOrder.items) {
+          await tx.inventory.update({
+            where: { product_id: item.product_id },
+            data: {
+              reserved_quantity: { decrement: item.quantity },
+            },
+          });
+        }
+      }
+
+      return await tx.salesOrder.update({
+        where: { id },
+        data: { status: 'CANCELLED' },
+      });
+    });
+
+    res.json({
+      message: 'Sales Order cancelled successfully.',
+      sales_order: updatedOrder,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   convertQuotationToSalesOrder,
   confirmSalesOrder,
   dispatchSalesOrder,
+  cancelSalesOrder,
   getSalesOrders,
   getSalesOrderById,
 };
