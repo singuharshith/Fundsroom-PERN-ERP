@@ -8,11 +8,25 @@ Customer Enquiry ➔ Quotation ➔ Sales Order ➔ Inventory Reservation ➔ Dis
 
 ---
 
+## 🎯 Live Presentation & Examiner's Guide
+
+> **Important**: For step-by-step instructions on presenting the demo and answering evaluator questions, open [`docs/DEMO_EXAMINER_GUIDE.md`](file:///c:/Users/Harshith%20singu/Downloads/case%20study2(fundsroom)/docs/DEMO_EXAMINER_GUIDE.md).
+
+### Quick 5-Minute Live Demo Sequence:
+1. **Log in as Sales Rep**: Go to `http://localhost:3000`, click **SALES_USER** quick-fill button (`sales@fundsroom.com` / `Sales@123`).
+2. **Log Enquiry**: Go to **Enquiries** ➔ Click **Create enquiry** ➔ Select customer `Acme Industrial Solutions Ltd` & 20 bearings.
+3. **Draft & Accept Quotation**: Go to **Quotations** ➔ Click **Draft quotation** ➔ Select enquiry ➔ Set unit price ₹350, 10% disc, 18% GST. Mark **Sent** then **Accept**.
+4. **Convert to Sales Order**: Click **Convert to order** on the ACCEPTED quotation.
+5. **Switch to Admin & Reserve Stock**: Sign out ➔ Log in as **ADMIN** (`admin@fundsroom.com` / `Admin@123`). Go to **Sales orders** ➔ Click **Reserve stock**. (Notice reserved quantity increases while physical stock stays unchanged).
+6. **Dispatch Order**: Click **Dispatch** ➔ Enter vehicle number `MH-12-AB-1234` & driver name `Suresh Patil`. (Notice physical & reserved stock both decrement together).
+
+---
+
 ## 🛠️ Tech Stack
 
-- **Frontend**: React.js (Vite, Functional Components, Hooks, Context API, Tailwind CSS, Lucide Icons)
+- **Frontend**: React.js (Vite, Functional Components, Hooks, Context API, IBM Plex Typography, Tailwind CSS)
 - **Backend**: Node.js + Express.js (CommonJS, Zod validation, Centralized Error Handler)
-- **Database**: PostgreSQL (via `embedded-postgres` or local Docker/native PostgreSQL)
+- **Database**: PostgreSQL (via `embedded-postgres` or local PostgreSQL)
 - **ORM**: Prisma ORM (Strict relational modeling, Decimal money types, FK constraints, Unique constraints)
 - **Authentication**: JWT (JSON Web Tokens) + `bcryptjs` password hashing + Express Role-Based Authorization Middleware (`ADMIN` & `SALES_USER`)
 - **Testing**: Jest + Supertest (6 automated tests including concurrent reservation simulation)
@@ -30,13 +44,7 @@ Customer Enquiry ➔ Quotation ➔ Sales Order ➔ Inventory Reservation ➔ Dis
 
 ## 🚀 Quick Start Guide
 
-### 1. Prerequisites
-- **Node.js**: v20+ LTS (`node -v`)
-- **Git**: Installed (`git -v`)
-
-### 2. Installation
-
-Clone the repository and install dependencies for both backend and frontend:
+### 1. Installation
 
 ```bash
 # Install backend dependencies
@@ -48,39 +56,34 @@ cd ../frontend
 npm install
 ```
 
-### 3. Database Setup (Automated)
-
-The backend comes pre-configured with `embedded-postgres` for zero-setup execution.
+### 2. Database Setup (Automated)
 
 ```bash
 cd backend
 
-# Start local PostgreSQL database server on port 5432
+# Start local PostgreSQL server
 node scripts/start-db.js
 
 # Sync Prisma Schema with PostgreSQL database
 npx prisma db push
 
-# Seed initial test data (Users, Industrial Products, Inventory, Customers)
+# Seed test data (Users, Industrial Products, Inventory, Customers)
 node prisma/seed.js
 ```
 
-### 4. Running the Application
+### 3. Running the Application
 
-In terminal 1 (Backend API Server on `http://localhost:5000`):
+Terminal 1 (Backend API Server on `http://localhost:5000`):
 ```bash
 cd backend
-npm run dev
-# or: npm start
+npm start
 ```
 
-In terminal 2 (Frontend React App on `http://localhost:3000`):
+Terminal 2 (Frontend React App on `http://localhost:3000`):
 ```bash
 cd frontend
 npm run dev
 ```
-
-Open `http://localhost:3000` in your web browser and log in with the test credentials above.
 
 ---
 
@@ -93,8 +96,8 @@ cd backend
 npm test
 ```
 
-### Test Coverage Highlights:
-1. **Server-Side Quotation Math**: Asserts `line_amount = (qty * price) * (1 - discount/100) * (1 + gst/100)` and `grand_total` server calculations.
+### Test Results Summary:
+1. **Server-Side Quotation Math**: Asserts `line_amount = (qty * price) * (1 - discount/100) * (1 + gst/100)` and `grand_total` calculations.
 2. **Quotation Status Guard**: Verifies `DRAFT` or `REJECTED` quotations cannot be converted into Sales Orders (HTTP 400).
 3. **Double Conversion Guard**: Verifies unique constraint on `sales_orders.quotation_id` prevents duplicate order creation (HTTP 409).
 4. **Over-Reservation Guard**: Verifies attempts to reserve more than available inventory are rejected and stock remains unchanged (HTTP 400).
@@ -103,25 +106,13 @@ npm test
 
 ---
 
-## ⚙️ Environment Variables
-
-Copy `backend/.env.example` to `backend/.env`:
-
-```env
-PORT=5000
-DATABASE_URL="postgresql://postgres:postgresPassword@localhost:5432/erp_db?schema=public"
-JWT_SECRET="super-secret-jwt-key-for-erp-case-study"
-```
-
----
-
 ## ⚡ Concurrency & Inventory Reservation Solution
 
 ### The Scenario
-A product has `available_quantity = 100` (`physical_quantity - reserved_quantity`). Two near-simultaneous requests try to reserve `80` units and `50` units. Only one request must succeed, or the second request must be revalidated against post-reservation availability.
+Available stock = 100 (`physical - reserved`). Two requests try to reserve `80` units and `50` units simultaneously. Only one request must succeed.
 
 ### Our Solution Architecture
-We use **Prisma Interactive Transactions (`$transaction`)** combined with **Atomic Conditional Database Updates (`$executeRaw`)**.
+Prisma `$transaction` + Atomic Conditional SQL Update:
 
 ```sql
 UPDATE inventory 
@@ -130,45 +121,12 @@ WHERE product_id = :productId
   AND (physical_quantity - reserved_quantity) >= :requestedQty;
 ```
 
-### Why This Solution is Bulletproof:
-1. **Database-Level Atomicity**: In PostgreSQL, an `UPDATE` statement evaluates its `WHERE` clause against the latest committed state of the target row under row-level lock.
-2. **No Double-Counting / Over-Reservation**: If Request A updates `reserved_quantity` from 0 to 80, the row is committed. When Request B executes its update, PostgreSQL checks `(100 - 80) >= 50` which evaluates to `false` (20 < 50). The query updates `0` rows.
-3. **Rollback Safety**: If any item in a multi-product order fails this atomic conditional update, the transaction throws an error, rolling back all prior updates in that batch (All-or-Nothing reservation).
+PostgreSQL evaluates the `WHERE` clause under row-level lock. If Request A reserves 80, Request B sees `(100 - 80) >= 50` (20 < 50) which evaluates to `false`, updating 0 rows and rolling back transaction B automatically.
 
 ---
 
-## 📊 Database Schema & ER Diagram
+## 📊 Deliverables & Links
 
-Detailed Mermaid ER Diagram available at [`docs/er-diagram.md`](file:///c:/Users/Harshith%20singu/Downloads/case%20study2(fundsroom)/docs/er-diagram.md).
-
-### Entity Overview:
-- `users`: ID, name, email, password_hash, role (`ADMIN`, `SALES_USER`)
-- `customers`: ID, company_name, contact_person, mobile, email, city
-- `products`: ID, product_code (unique), product_name, category, unit, base_price (Decimal)
-- `inventory`: ID, product_id (unique FK), physical_quantity, reserved_quantity. Derived: `available_quantity = physical - reserved`.
-- `enquiries` & `enquiry_items`: Enquiry header & line items.
-- `quotations` & `quotation_items`: Quotations with server-calculated prices, GST %, discount %.
-- `sales_orders` & `sales_order_items`: Sales Orders with `quotation_id` unique constraint.
-- `dispatches` & `dispatch_items`: Dispatch details (vehicle_number, driver_name).
-
----
-
-## 📑 Postman API Collection
-
-Postman Collection JSON file available at [`docs/ERP_API_Collection.json`](file:///c:/Users/Harshith%20singu/Downloads/case%20study2(fundsroom)/docs/ERP_API_Collection.json). Import this file into Postman, Thunder Client, or Bruno to inspect and test all API endpoints.
-
----
-
-## 💡 Live Round Quick Guide
-
-### 1. How to add `damaged_quantity`:
-1. In `schema.prisma`: add `damaged_quantity Int @default(0)` to model `Inventory`.
-2. Update formula in `productController.js` and queries:
-   `available_quantity = physical_quantity - reserved_quantity - damaged_quantity`.
-3. Update `POST /inventory/damaged` endpoint to increment `damaged_quantity`.
-
-### 2. How to cancel a CONFIRMED Sales Order:
-1. In `salesOrderController.js`: add `cancelSalesOrder` endpoint.
-2. Inside `$transaction`: check status is `CONFIRMED`.
-3. For each line item: decrement `reserved_quantity = reserved_quantity - quantity`.
-4. Update Sales Order status to `CANCELLED`.
+- **Live Examiner's Guide**: [`docs/DEMO_EXAMINER_GUIDE.md`](file:///c:/Users/Harshith%20singu/Downloads/case%20study2(fundsroom)/docs/DEMO_EXAMINER_GUIDE.md)
+- **Mermaid ER Diagram**: [`docs/er-diagram.md`](file:///c:/Users/Harshith%20singu/Downloads/case%20study2(fundsroom)/docs/er-diagram.md)
+- **Postman API Collection**: [`docs/ERP_API_Collection.json`](file:///c:/Users/Harshith%20singu/Downloads/case%20study2(fundsroom)/docs/ERP_API_Collection.json)
