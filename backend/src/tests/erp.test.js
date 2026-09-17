@@ -29,6 +29,25 @@ describe('PERN ERP Automated Test Suite', () => {
   });
 
   afterAll(async () => {
+    // Clean up temporary test items
+    const testProds = await prisma.product.findMany({
+      where: {
+        OR: [
+          { product_code: { startsWith: 'CONCUR-' } },
+          { product_code: { startsWith: 'TEST-LOW-' } },
+        ],
+      },
+      select: { id: true },
+    });
+    const testIds = testProds.map((p) => p.id);
+    if (testIds.length > 0) {
+      await prisma.dispatchItem.deleteMany({ where: { product_id: { in: testIds } } });
+      await prisma.salesOrderItem.deleteMany({ where: { product_id: { in: testIds } } });
+      await prisma.quotationItem.deleteMany({ where: { product_id: { in: testIds } } });
+      await prisma.enquiryItem.deleteMany({ where: { product_id: { in: testIds } } });
+      await prisma.inventory.deleteMany({ where: { product_id: { in: testIds } } });
+      await prisma.product.deleteMany({ where: { id: { in: testIds } } });
+    }
     await prisma.$disconnect();
   });
 

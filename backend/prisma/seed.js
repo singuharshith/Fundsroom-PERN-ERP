@@ -6,6 +6,27 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding database...');
 
+  // Clean up test products and their referenced child items
+  const testProds = await prisma.product.findMany({
+    where: {
+      OR: [
+        { product_code: { startsWith: 'CONCUR-' } },
+        { product_code: { startsWith: 'TEST-LOW-' } },
+      ],
+    },
+    select: { id: true },
+  });
+  const testIds = testProds.map((p) => p.id);
+
+  if (testIds.length > 0) {
+    await prisma.dispatchItem.deleteMany({ where: { product_id: { in: testIds } } });
+    await prisma.salesOrderItem.deleteMany({ where: { product_id: { in: testIds } } });
+    await prisma.quotationItem.deleteMany({ where: { product_id: { in: testIds } } });
+    await prisma.enquiryItem.deleteMany({ where: { product_id: { in: testIds } } });
+    await prisma.inventory.deleteMany({ where: { product_id: { in: testIds } } });
+    await prisma.product.deleteMany({ where: { id: { in: testIds } } });
+  }
+
   // 1. Seed Users
   const adminPasswordHash = await bcrypt.hash('Admin@123', 10);
   const salesPasswordHash = await bcrypt.hash('Sales@123', 10);
@@ -61,7 +82,7 @@ async function main() {
 
   console.log('Customers seeded:', [customer1.company_name, customer2.company_name]);
 
-  // 3. Seed Products and Inventory
+  // 3. Seed 10 Clean Industrial Products and Inventory
   const productsData = [
     {
       product_code: 'PROD-001',
@@ -111,12 +132,49 @@ async function main() {
       base_price: 3200.00,
       initial_stock: 120,
     },
+    {
+      product_code: 'PROD-007',
+      product_name: 'Industrial Centrifugal Water Pump 3HP',
+      category: 'Pumps',
+      unit: 'Pcs',
+      base_price: 18500.00,
+      initial_stock: 45,
+    },
+    {
+      product_code: 'PROD-008',
+      product_name: 'Heavy-Duty Flanged Gate Valve 4"',
+      category: 'Valves',
+      unit: 'Pcs',
+      base_price: 6800.00,
+      initial_stock: 60,
+    },
+    {
+      product_code: 'PROD-009',
+      product_name: 'Flexible Rubber Coupling 80mm',
+      category: 'Couplings',
+      unit: 'Pcs',
+      base_price: 1450.00,
+      initial_stock: 300,
+    },
+    {
+      product_code: 'PROD-010',
+      product_name: 'Pneumatic Air Filter-Regulator Unit',
+      category: 'Pneumatics',
+      unit: 'Pcs',
+      base_price: 2750.00,
+      initial_stock: 180,
+    },
   ];
 
   for (const prod of productsData) {
     const product = await prisma.product.upsert({
       where: { product_code: prod.product_code },
-      update: {},
+      update: {
+        product_name: prod.product_name,
+        category: prod.category,
+        unit: prod.unit,
+        base_price: prod.base_price,
+      },
       create: {
         product_code: prod.product_code,
         product_name: prod.product_name,
@@ -137,7 +195,7 @@ async function main() {
     });
   }
 
-  console.log('Products and Inventory seeded successfully.');
+  console.log('Successfully seeded 10 industrial products and inventory records.');
 }
 
 main()
@@ -148,3 +206,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
