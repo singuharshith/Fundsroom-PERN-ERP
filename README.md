@@ -1,52 +1,71 @@
-# PERN ERP Case Study — Industrial Supply Chain System
+# 🏭 FundsRoom ERP — Industrial Supply Chain & Control Ledger
 
-A production-ready PERN (PostgreSQL, Express, React, Node.js) web application modeling the core industrial manufacturing & supply chain workflow:
+> A full-stack PERN (**P**ostgreSQL, **E**xpress.js, **R**eact.js, **N**ode.js) Enterprise Resource Planning (ERP) application engineered for industrial manufacturing and supply chain management.
+
+---
+
+## 💡 What is FundsRoom ERP?
+
+**FundsRoom ERP** is an internal B2B control system built for industrial supply chain operations (e.g. valves, bearings, hoses). It streamlines the full commercial pipeline between **Company Sales Representatives**, **Warehouse Admins**, and **B2B Industrial Customers**:
 
 ```
-Customer Enquiry ➔ Quotation ➔ Sales Order ➔ Inventory Reservation ➔ Dispatch
+Customer Enquiry  ➔  Quotation  ➔  Sales Order  ➔  Inventory Reservation  ➔  Dispatch
 ```
 
----
-
-## 🎯 Live Presentation & Examiner's Guide
-
-> **Important**: For step-by-step instructions on presenting the demo and answering evaluator questions, open [`docs/DEMO_EXAMINER_GUIDE.md`](file:///c:/Users/Harshith%20singu/Downloads/case%20study2(fundsroom)/docs/DEMO_EXAMINER_GUIDE.md).
-
-### Quick 5-Minute Live Demo Sequence:
-1. **Log in as Sales Rep**: Go to `http://localhost:3000`, click **SALES_USER** quick-fill button (`sales@fundsroom.com` / `Sales@123`).
-2. **Log Enquiry**: Go to **Enquiries** ➔ Click **Create enquiry** ➔ Select customer `Acme Industrial Solutions Ltd` & 20 bearings.
-3. **Draft & Accept Quotation**: Go to **Quotations** ➔ Click **Draft quotation** ➔ Select enquiry ➔ Set unit price ₹350, 10% disc, 18% GST. Mark **Sent** then **Accept**.
-4. **Convert to Sales Order**: Click **Convert to order** on the ACCEPTED quotation.
-5. **Switch to Admin & Reserve Stock**: Sign out ➔ Log in as **ADMIN** (`admin@fundsroom.com` / `Admin@123`). Go to **Sales orders** ➔ Click **Reserve stock**. (Notice reserved quantity increases while physical stock stays unchanged).
-6. **Dispatch Order**: Click **Dispatch** ➔ Enter vehicle number `MH-12-AB-1234` & driver name `Suresh Patil`. (Notice physical & reserved stock both decrement together).
+### Key Highlights
+- **100% Legible, Kit-Free Interface**: Redesigned UI System v2 using **Public Sans** for clear typography, **IBM Plex Mono** for financial/numeric ledger metrics, deep teal (`#1F5C73`) accents, 1px crisp borders, and **zero generic SaaS card shadow bloat**.
+- **Server-Side Financial Accuracy**: Precision tax (GST) and discount calculations performed strictly on the backend using Prisma `Decimal` types.
+- **Double Conversion Guard**: Hardened database unique constraint preventing duplicate Sales Order creation from the same Quotation.
+- **Atomic Concurrency Stock Locking**: Row-level database transactions preventing over-reservation during simultaneous sales orders.
+- **Admin Inventory Restocking**: Built-in Admin stock entry modal and API for receiving supplier shipments and adding physical stock.
 
 ---
 
-## 🛠️ Tech Stack
+## 🏢 How the Internal Workflow Operates
 
-- **Frontend**: React.js (Vite, Functional Components, Hooks, Context API, IBM Plex Typography, Tailwind CSS)
-- **Backend**: Node.js + Express.js (CommonJS, Zod validation, Centralized Error Handler)
-- **Database**: PostgreSQL (via `embedded-postgres` or local PostgreSQL)
-- **ORM**: Prisma ORM (Strict relational modeling, Decimal money types, FK constraints, Unique constraints)
-- **Authentication**: JWT (JSON Web Tokens) + `bcryptjs` password hashing + Express Role-Based Authorization Middleware (`ADMIN` & `SALES_USER`)
-- **Testing**: Jest + Supertest (6 automated tests including concurrent reservation simulation)
+| Stage | Role | What Happens Behind the Scenes |
+| :--- | :--- | :--- |
+| **1. Enquiry** | **Sales Rep** | Log customer requirement for industrial SKUs (`NEW` status). |
+| **2. Quotation** | **Sales Rep** | Set unit prices, item discounts, and GST %. System calculates line totals. Rep marks `SENT`, then `ACCEPTED` upon customer approval. |
+| **3. Sales Order** | **Sales Rep** | Convert `ACCEPTED` Quotation into a `PENDING` Sales Order. Database enforces strict 1-to-1 conversion. |
+| **4. Reservation** | **Admin** | Admin locks stock (`CONFIRMED`). Backend executes an atomic SQL query: `reserved_quantity = reserved_quantity + qty`. Available stock (`physical - reserved`) decreases. |
+| **5. Dispatch** | **Admin** | Enter transport vehicle & driver details (`DISPATCHED`). Decrements both `physical_quantity` and `reserved_quantity` simultaneously. |
+| **6. Restocking** | **Admin** | When shipments arrive or stock reaches 0, Admin adds physical units via the **+ Add Stock** modal. |
 
 ---
 
-## 🔐 Test Login Credentials
+## 🎨 Design System v2 — Principles
 
-| Role | Email | Password | Allowed Actions |
-| :--- | :--- | :--- | :--- |
-| **ADMIN** | `admin@fundsroom.com` | `Admin@123` | Full access: View all records, Confirm Sales Orders (reserves inventory), Process Dispatches |
-| **SALES_USER** | `sales@fundsroom.com` | `Sales@123` | Create Enquiries, Draft Quotations, Accept/Reject Quotations, Convert to Sales Order, View Inventory (read-only) |
+The user interface was built following strict enterprise control-room standards:
+1. **Clear Actions Over Icon Menus**: Every action (`Mark Sent`, `Accept`, `Reject`, `Convert to Sales Order`, `Confirm & Reserve Stock`, `Cancel`, `Dispatch`) is an explicit, visible button with standard color coding.
+2. **Plain Text Pipeline Breadcrumbs**: Highlighting current stage progress without decorative gradient cards or circular badges:
+   Enquiry → Quotation → Sales Order → Reservation → Dispatch
+3. **Ledger Numeric Formatting**: Currency values (`₹`), SKU codes (`PROD-001`), and quantities display in monospace `IBM Plex Mono` for rapid scanning.
+4. **Low Stock Visual Cues**: Items with available stock under 50 units display a `3px solid amber` left indicator line.
+
+---
+
+## 🛠️ System Architecture & Stack
+
+- **Frontend**: React 18, Vite, React Router v6, Axios, Tailwind CSS, Public Sans & IBM Plex Mono fonts.
+- **Backend**: Node.js, Express.js (RESTful API), Zod validation, JWT Authentication, Role-based Middleware (`ADMIN`, `SALES_USER`).
+- **Database & ORM**: PostgreSQL, Prisma ORM (Relational schemas, Foreign key constraints, Unique indexes, Decimal monetary types).
+- **Automated Testing**: Jest + Supertest (7 automated test suites covering workflow guards and concurrent locking).
 
 ---
 
 ## 🚀 Quick Start Guide
 
-### 1. Installation
+### Prerequisites
+- Node.js (v18 or higher)
+- npm (v9 or higher)
+
+### 1. Clone & Install Dependencies
 
 ```bash
+git clone https://github.com/singuharshith/Fundsroom-PERN-ERP.git
+cd Fundsroom-PERN-ERP
+
 # Install backend dependencies
 cd backend
 npm install
@@ -56,77 +75,102 @@ cd ../frontend
 npm install
 ```
 
-### 2. Database Setup (Automated)
+### 2. Database Initialization & Seeding
 
 ```bash
 cd backend
 
-# Start local PostgreSQL server
+# Start local PostgreSQL database
 node scripts/start-db.js
 
-# Sync Prisma Schema with PostgreSQL database
+# Sync Prisma Schema with Database
 npx prisma db push
 
-# Seed test data (Users, Industrial Products, Inventory, Customers)
+# Seed initial users, products, inventory, and customers
 node prisma/seed.js
 ```
 
-### 3. Running the Application
+### 3. Run Development Servers
 
-Terminal 1 (Backend API Server on `http://localhost:5000`):
+**Terminal 1 — Backend API (`http://localhost:5000`):**
 ```bash
 cd backend
-npm start
+npm run dev
 ```
 
-Terminal 2 (Frontend React App on `http://localhost:3000`):
+**Terminal 2 — Frontend App (`http://localhost:3000`):**
 ```bash
 cd frontend
 npm run dev
 ```
 
+**Terminal 3 (Optional) — Prisma Studio (`http://localhost:5555`):**
+```bash
+cd backend
+npx prisma studio --port 5555
+```
+
 ---
 
-## 🧪 Running Automated Tests
+## 🔑 Test User Credentials
 
-Run the full Jest + Supertest suite (covers all 5 mandatory test scenarios + 1 bonus concurrency test):
+| Role | Email | Password | Permissions |
+| :--- | :--- | :--- | :--- |
+| **ADMIN** | `admin@fundsroom.com` | `Admin@123` | Full control: Confirm & Reserve stock, Dispatch orders, Cancel orders, Restock physical inventory. |
+| **SALES_USER** | `sales@fundsroom.com` | `Sales@123` | Commercial operations: Create enquiries, Draft/Send/Accept quotations, Convert to sales orders. |
+
+---
+
+## 🧪 Automated Test Suite
+
+Run the full automated test suite using Jest:
 
 ```bash
 cd backend
 npm test
 ```
 
-### Test Results Summary:
-1. **Server-Side Quotation Math**: Asserts `line_amount = (qty * price) * (1 - discount/100) * (1 + gst/100)` and `grand_total` calculations.
-2. **Quotation Status Guard**: Verifies `DRAFT` or `REJECTED` quotations cannot be converted into Sales Orders (HTTP 400).
-3. **Double Conversion Guard**: Verifies unique constraint on `sales_orders.quotation_id` prevents duplicate order creation (HTTP 409).
-4. **Over-Reservation Guard**: Verifies attempts to reserve more than available inventory are rejected and stock remains unchanged (HTTP 400).
-5. **Role Security**: Verifies `SALES_USER` attempting to hit `/sales-orders/:id/confirm` receives HTTP 403 Forbidden.
-6. **Bonus Concurrency Test**: Fires `Promise.all` near-simultaneous confirmation calls against limited stock and asserts only 1 succeeds with zero double-counting.
+### Verified Test Cases (7/7 Passed):
+1. **Server-Side Quotation Math**: Verifies line item amounts and tax/discount calculations.
+2. **Quotation Status Guard**: Asserts `DRAFT` or `REJECTED` quotations cannot be converted into Sales Orders (HTTP 400).
+3. **Double Conversion Guard**: Verifies duplicate conversion attempts return HTTP 409 Conflict.
+4. **Over-Reservation Protection**: Asserts requests exceeding available stock are rejected and stock remains untouched (HTTP 400).
+5. **Role Authorization**: Asserts `SALES_USER` hitting Admin confirm endpoints receives HTTP 403 Forbidden.
+6. **Concurrent Reservation Guard (`Promise.all`)**: Simulates simultaneous confirmation calls against limited stock; asserts only one succeeds with zero double-counting.
+7. **Admin Inventory Restocking**: Asserts Admin can restock physical stock while non-admin attempts are rejected (HTTP 403).
 
 ---
 
-## ⚡ Concurrency & Inventory Reservation Solution
+## 📁 Repository Structure
 
-### The Scenario
-Available stock = 100 (`physical - reserved`). Two requests try to reserve `80` units and `50` units simultaneously. Only one request must succeed.
-
-### Our Solution Architecture
-Prisma `$transaction` + Atomic Conditional SQL Update:
-
-```sql
-UPDATE inventory 
-SET reserved_quantity = reserved_quantity + :requestedQty
-WHERE product_id = :productId 
-  AND (physical_quantity - reserved_quantity) >= :requestedQty;
+```
+Fundsroom-PERN-ERP/
+├── backend/
+│   ├── prisma/
+│   │   ├── schema.prisma       # Database schema & relations
+│   │   └── seed.js             # Seed initial database records
+│   ├── scripts/
+│   │   └── start-db.js         # Embedded PostgreSQL launcher
+│   ├── src/
+│   │   ├── controllers/        # Business logic & transaction handlers
+│   │   ├── middleware/         # JWT Auth & Role Authorization
+│   │   ├── routes/             # REST API routes
+│   │   └── tests/              # Jest automated test suite
+│   └── server.js               # Express application entry point
+├── frontend/
+│   ├── src/
+│   │   ├── components/         # Navbar, WorkflowTracker, ProtectedRoute
+│   │   ├── context/            # AuthContext (JWT & User state)
+│   │   ├── pages/              # Enquiries, Quotations, Sales Orders, Inventory, Login
+│   │   └── index.css           # Design Tokens v2 & Tailwind styles
+│   ├── index.html              # HTML shell & font imports
+│   └── vite.config.js          # Vite configuration & proxy settings
+└── README.md                   # System documentation
 ```
 
-PostgreSQL evaluates the `WHERE` clause under row-level lock. If Request A reserves 80, Request B sees `(100 - 80) >= 50` (20 < 50) which evaluates to `false`, updating 0 rows and rolling back transaction B automatically.
-
 ---
 
-## 📊 Deliverables & Links
+## 📜 License & Acknowledgments
 
-- **Live Examiner's Guide**: [`docs/DEMO_EXAMINER_GUIDE.md`](file:///c:/Users/Harshith%20singu/Downloads/case%20study2(fundsroom)/docs/DEMO_EXAMINER_GUIDE.md)
-- **Mermaid ER Diagram**: [`docs/er-diagram.md`](file:///c:/Users/Harshith%20singu/Downloads/case%20study2(fundsroom)/docs/er-diagram.md)
-- **Postman API Collection**: [`docs/ERP_API_Collection.json`](file:///c:/Users/Harshith%20singu/Downloads/case%20study2(fundsroom)/docs/ERP_API_Collection.json)
+Developed as a PERN ERP Case Study for **FundsRoom**. Built with precision for legibility, stability, and scale.
+
